@@ -5,7 +5,7 @@ ccccc=["Current Events", "Fine Arts", "Geography", "History", "Literature", "Myt
 sssssccccc={"Current Events Subcategories":["American Current Events", "Other Current Events"], "Fine Arts Subcategories":["American Fine Arts", "Audiovisual Fine Arts", "Auditory Fine Arts", "British Fine Arts", "European Fine Arts", "Opera", "Visual Fine Arts", "World Fine Arts", "Other Fine Arts"], "Geography Subcategories":["American Geography", "World Geography"], "History Subcategories":["American History", "British History", "European History", "Classical History", "World History", "Other History"], "Literature Subcategories":["American Literature", "British Literature", "European Literature", "Classical Literature", "World Literature", "Other Literature"], "Mythology Subcategories":["American Mythology", "Chinese Mythology", "Egyptian Mythology", "Greco-Roman Mythology", "Indian Mythology", "Japanese Mythology", "Norse Mythology", "Other East Asian Mythology", "Other Mythology"], "Philosophy Subcategories":["American Philosophy", "Classical Philosophy", "East Asian Philosophy", "European Philosophy", "Other Philosophy"], "Religion Subcategories":["American Religion", "Christianity", "East Asian Religion", "Islam", "Judaism", "Other Religion"], "Science Subcategories":["American Science", "Biology", "Chemistry", "Computer Science", "Math", "Physics", "World Science", "Other Science"], "Social Science Subcategories":["American Social Science", "Anthropology", "Economics", "Linguistics", "Political Science", "Psychology", "Sociology", "Other Social Science"], "Trash Subcategories":["American Trash", "Movies", "Music", "Sports", "Television", "Video Games", "Other Trash"]}
 ddddd=[str(i) for i in range(1,10)]
 cc,sscc,dd,ttoouurr,ttbb,tthhyymmee=None,None,None,None,None,None
-
+buzzed=False
 
 class ToolTip(object):
     def __init__(self, widget):
@@ -101,8 +101,8 @@ def setup():
     fram2=tk.Frame(root)
     fram2.grid(row=1,column=0)
     timeo=tk.Label(fram2, text = 'Time between each word (ms): ', font=('calibri',10, 'bold'))
-    thyme = tk.Scale(fram2, from_=100, to=500, orient=tk.HORIZONTAL, length=400, tickinterval=50)
-    thyme.set(300)
+    thyme = tk.Scale(fram2, from_=0, to=500, orient=tk.HORIZONTAL, length=400, tickinterval=50)
+    thyme.set(250)
     timeex=tk.Button(fram2, text='❔')
     timeo.grid(row=0,column=0, sticky="e")
     thyme.grid(row=0,column=1, sticky="w")
@@ -117,7 +117,6 @@ def setup():
     tunbon=tk.Radiobutton(fram3, text='Tossups and bonuses', variable=tubon, value=2)
     tubonex=tk.Button(fram3, text='❔')
     def submit():
-        global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee
         c=[ccccc[i] for i in range(len(ccccc)) if cats[i].get()>0]
         if c==[]:
             c=ccccc
@@ -143,7 +142,8 @@ def setup():
     quibt.grid(row=1,column=2)
     root.mainloop()
 
-def qscreen(tuorbon):
+def qscreen(tuorbon,timeint):
+    global buzzed
     root=tk.Tk()
     root.geometry("+20+20")
     print(root.winfo_screenwidth(),root.winfo_screenheight())
@@ -151,13 +151,20 @@ def qscreen(tuorbon):
     topf.grid(row=0,column=0)
     statframe=tk.LabelFrame(topf, text='Stats')
     statframe.grid(row=0,column=0)
-    qframe=tk.Frame()
+    qframe=tk.Frame(root)
     qframe.grid(row=1,column=0)
-    qcanvas=tk.Canvas(qframe,width=600,height=400,background="black")
-    qcanvas.create_text(300,200,text="placeholder", width=1000, fill="white",font=("calibri", 15))
+    qcanvas=tk.Canvas(qframe,width=600,height=400,background="white")
     qcanvas.pack()
-    buttoninterface=tk.Frame()
-    buttoninterface.grid(row=2,column=0)
+    qtext=qcanvas.create_text(int(qcanvas['width'])/2,int(qcanvas['height'])/2,text='Press [Next] to start', width=qcanvas['width'], fill="black",font=("times new roman", 15))
+    bframe=tk.LabelFrame(root, text='Controls')
+    bframe.grid(row=2,column=0)
+    controlframe=tk.Frame(bframe)
+    controlframe.grid(row=0,column=0)
+    
+
+
+
+
     qbt=tk.Button(topf,text='Quit',command=quit)
     tu=0
     bon=0
@@ -165,6 +172,7 @@ def qscreen(tuorbon):
     bagels=[0,0,0,0]
     tupts=0
     bpts=0
+    buzzed=False
     tuct=tk.Label(statframe,text='Tossups: %s'%(tu))
     tossuppts=tk.Label(statframe,text='Tossup Points: %s'%(tupts))
     ppg=tk.Label(statframe,text='PP20TUH: %s'%(0 if tu==0 else tupts/tu))
@@ -174,7 +182,32 @@ def qscreen(tuorbon):
     ppb=tk.Label(statframe,text='PPB: %s'%(0 if bon==0 else bpts/bon))
     tttb=tk.Label(statframe,text='30s/20s/10s/0s: %s'%('/'.join(str(i) for i in bagels)))
     is_this_correct=tk.StringVar()
-    answerline=tk.Entry(buttoninterface, textvariable = is_this_correct, width=30)
+    answerline=tk.Entry(controlframe, textvariable = is_this_correct, width=30,state='disabled')
+    skip=tk.Button(controlframe,text="Skip")
+    def buzzin():
+        global buzzed
+        buzzed=True
+        answerline['state']='normal'
+        buzzer['state']='disabled'
+        skip['state']='disabled'
+        read['state']='disabled'
+        #add stuff for time
+        root.bind('<return>',checkanswer)
+    buzzer=tk.Button(controlframe,text="Buzz",command=buzzin)
+    tcframe=tk.Frame(bframe)
+    tcframe.grid(row=1,column=0)
+    timeo=tk.Label(tcframe, text = 'Time between each word (ms): ', font=('calibri',10, 'bold'))
+    thyme = tk.Scale(tcframe, from_=0, to=500, orient=tk.HORIZONTAL, length=400, tickinterval=50)
+    thyme.set(timeint)
+    timeo.grid(row=0,column=0)
+    thyme.grid(row=0,column=1)
+    def readq():
+        if tuorbon==0:
+            read_tossup(qframe,qcanvas,qtext,thyme)
+        elif tuorbon==1:
+            read_bonus(qframe,qcanvas,qtext,thyme)
+    read=tk.Button(controlframe,text="Next",command=readq)
+    read.grid(row=0,column=0)
     if tuorbon==0:
         tuct.grid(row=0,column=0)
         tossuppts.grid(row=0,column=1)
@@ -194,20 +227,41 @@ def qscreen(tuorbon):
         bonuspts.grid(row=1,column=1)
         ppb.grid(row=1,column=2)
         tttb.grid(row=1,column=3)
-    answerline.grid(row=0,column=0)
+    answerline.grid(row=0,column=3)
+    buzzer.grid(row=0,column=2)
+    skip.grid(row=0,column=1)
     qbt.grid(row=0,column=1,sticky='e')
+    
     root.mainloop()
     
+def checkanswer(givenans,actualans):
+    if givenans == actualans:
+        return True
 
-def readtossup(question):
-    tu=question.split()
+def read_tossup(window,canvas,question_txt,timeint):
+    current_q = """A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858."""
+    powermark=current_q.find("(*)")
+    tu=current_q.split()
+    if powermark>-1:
+        index=current_q[:powermark].count(" ")
+        tu.pop(index)
+        tu[index-1]+=" (*)"
+    words = current_q.split()
+    iterative(words, 0, window,canvas,question_txt,timeint)
+def iterative(words, i, window,canvas,question_txt,timeint):
+    if i > len(words):
+        return
+    if not buzzed:
+        canvas.itemconfigure(question_txt, text=' '.join(words[:i]))
+        i += 1
+        window.after(timeint.get(), lambda: iterative(words, i,window,canvas,question_txt,timeint))   
 
 def readbonus(bonus):
     bon=bonus.split()
 
 setup()
 print(cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)
-qscreen(ttbb)
+qscreen(ttbb,tthhyymmee)
 
 # make new tk and display w text box, pp20tuh and ppb
 #buzz w button and anwer w text box, give 5-7s to ans
