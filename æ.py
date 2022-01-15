@@ -6,6 +6,7 @@ sssssccccc={"Current Events Subcategories":["American Current Events", "Other Cu
 ddddd=[str(i) for i in range(1,10)]
 cc,sscc,dd,ttoouurr,ttbb,tthhyymmee=None,None,None,None,None,None
 buzzed=False
+reading=False
 
 class ToolTip(object):
     def __init__(self, widget):
@@ -142,6 +143,8 @@ def setup():
     quibt.grid(row=1,column=2)
     root.mainloop()
 
+
+
 def qscreen(tuorbon,timeint):
     global buzzed
     root=tk.Tk()
@@ -182,18 +185,31 @@ def qscreen(tuorbon,timeint):
     ppb=tk.Label(statframe,text='PPB: %s'%(0 if bon==0 else bpts/bon))
     tttb=tk.Label(statframe,text='30s/20s/10s/0s: %s'%('/'.join(str(i) for i in bagels)))
     is_this_correct=tk.StringVar()
-    answerline=tk.Entry(controlframe, textvariable = is_this_correct, width=30,state='disabled')
-    skip=tk.Button(controlframe,text="Skip")
+    answerline=tk.Entry(controlframe, textvariable = is_this_correct, width=30,state='disabled',)
     def buzzin():
         global buzzed
         buzzed=True
         answerline['state']='normal'
+        enterans['state']='normal'
         buzzer['state']='disabled'
-        skip['state']='disabled'
         read['state']='disabled'
         #add stuff for time
-        root.bind('<return>',checkanswer)
+    def checkanswer():
+        givenans=is_this_correct.get()
+        actualans="Tokugawa Shogunate"
+        if buzzed:
+            print(givenans,actualans)
+            if givenans.lower() == actualans.lower():
+                print('yey yuo got it')
+                return True
+            else:
+                print('oopie that wrong answre is %s'%actualans)
+        answerline.delete(0,len(givenans))
+    enterans=tk.Button(controlframe,text="Enter",command=checkanswer)
+    enterans.grid(row=0,column=4)
     buzzer=tk.Button(controlframe,text="Buzz",command=buzzin)
+    if reading==False:
+        buzzer['state']='disabled'
     tcframe=tk.Frame(bframe)
     tcframe.grid(row=1,column=0)
     timeo=tk.Label(tcframe, text = 'Time between each word (ms): ', font=('calibri',10, 'bold'))
@@ -202,11 +218,15 @@ def qscreen(tuorbon,timeint):
     timeo.grid(row=0,column=0)
     thyme.grid(row=0,column=1)
     def readq():
+        global reading
+        reading=True
+        if reading and tuorbon==0 or tuorbon==2:
+            buzzer['state']='normal'
         if tuorbon==0:
             read_tossup(qframe,qcanvas,qtext,thyme)
         elif tuorbon==1:
             read_bonus(qframe,qcanvas,qtext,thyme)
-    read=tk.Button(controlframe,text="Next",command=readq)
+    read=tk.Button(controlframe,text="Next/Skip",command=readq)
     read.grid(row=0,column=0)
     if tuorbon==0:
         tuct.grid(row=0,column=0)
@@ -229,14 +249,11 @@ def qscreen(tuorbon,timeint):
         tttb.grid(row=1,column=3)
     answerline.grid(row=0,column=3)
     buzzer.grid(row=0,column=2)
-    skip.grid(row=0,column=1)
     qbt.grid(row=0,column=1,sticky='e')
     
     root.mainloop()
     
-def checkanswer(givenans,actualans):
-    if givenans == actualans:
-        return True
+
 
 def read_tossup(window,canvas,question_txt,timeint):
     current_q = """A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858."""
@@ -250,14 +267,18 @@ def read_tossup(window,canvas,question_txt,timeint):
     iterative(words, 0, window,canvas,question_txt,timeint)
 def iterative(words, i, window,canvas,question_txt,timeint):
     if i > len(words):
+        global reading
+        reading=False
         return
     if not buzzed:
         canvas.itemconfigure(question_txt, text=' '.join(words[:i]))
         i += 1
         window.after(timeint.get(), lambda: iterative(words, i,window,canvas,question_txt,timeint))   
+    else:
+        print('buzz')
 
-def readbonus(bonus):
-    bon=bonus.split()
+def read_bonus(window,canvas,question_txt,timeint):
+    current_q = """A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858."""
 
 setup()
 print(cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)
