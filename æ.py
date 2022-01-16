@@ -34,6 +34,12 @@ ppb=None
 tttb=None
 root=None
 buzzer=None
+curbpts=0
+enterans=None
+answerline=None
+qcanvas=None
+qtext=None
+is_this_correct=None
 tulist=["""A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858.""", """Two wolves named "Greedy" and "Ravenous" devour the food that this deity doesn't eat. This deity can see far from his throne of Hlidskjalf, and has information brought to him by the ravens Huginn and Muninn. This deity hung on his spear Gungnir from the World Tree Yggdrasil in order to master the runes, and he gave up one of his eyes to drink from Mimir's well. He rides the eight-legged steed Sleipnir and will be swallowed whole by Fenrir at Ragnarok. For 10 points, name this owner of Valhalla, the chief god of the Norse pantheon."""]
 tualist=["Tokugawa Shogunate","Odin"]
 bonlist=[["""In 2013, this man was succeeded as Director of the FBI by James Comey, before being appointed to his current post by Deputy Attorney General Rod Rosenstein. For 10 points each:\nName this Republican Special Counsel for the Department of Justice, who is currently overseeing an investigation into Russian interference in the 2016 US Presidential Election.""", """This former Trump campaign advisor entered a plea deal with Mueller, which resulted in additional charges for him and Paul Manafort, such as conspiracy against the United States from when they lobbied for Ukraine.""","""Gates and Manafort were lobbyists for this pro-Russian Ukrainian Party. Former President Viktor Yanukovych was the first member of this party to be elected president before leaving office in 2014."""],["""In this text, a woman is impregnated by eating a lingonberry and gives birth to a son who becomes King of Karelia. For 10 points each:\nName this epic which contains the story of the virgin Marjatta. In another story from this epic, a comb begins to bleed after its hero drowns trying to capture a swan to win Louhi's daughter's hand in marriage.""","""The story of Marjatta symbolizes the Christianization of this European country, which reveres Ilmarinen and Väinämöinen as mythological heroes and regards the Kalevala as its national epic.""","""In Finland, the word for Satan, “saatana,” is frequently used as a swear word in conjunction with a word thought to refer to this chief Finnish god. This god of the sky conjured lightning from a hammer, axe or sword."""]]
@@ -179,7 +185,7 @@ def setup():
 
 
 def qscreen(tuorbon,timeint):
-    global buzzed,root,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,buzzer
+    global buzzed,root,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct
     root=tk.Tk()
     root.geometry("+20+20")
     topf=tk.Frame(root)
@@ -216,40 +222,63 @@ def qscreen(tuorbon,timeint):
         read['state']='disabled'
         timeoutctr=root.after(7500,checkanswer)
     def checkanswer():
-        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb
+        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts
         if not ansalrgiven and not dead:
-            root.after_cancel(timeoutctr)
+            if timeoutctr!=None:
+                root.after_cancel(timeoutctr)
             if endctr!=None:
                 qframe.after_cancel(endctr)
             givenans=is_this_correct.get()
             ansalrgiven=True
             answerline.delete(0,len(givenans))
-            actualans=tualist[tunum]
-            if buzzed:
-                if givenans.lower() == actualans.lower():#improve sometime
-                    if curwd<=pm:
-                        tupts+=15
-                        ptn[0]+=1
+            if tbrn==0:
+                actualans=tualist[tunum]
+                if buzzed:
+                    if ansyet(givenans,actualans):#improve sometime
+                        if curwd<=pm:
+                            tupts+=15
+                            ptn[0]+=1
+                        else:
+                            tupts+=10
+                            ptn[1]+=1
                     else:
-                        tupts+=10
-                        ptn[1]+=1
-                else:
-                    if reading:
-                        tupts-=5# add "were you correct"
-                        ptn[2]+=1
-                if tbrn==0:
+                        if reading:
+                            tupts-=5# add "were you correct"
+                            ptn[2]+=1
                     tu+=1
                     qcanvas.itemconfigure(qtext,text=tulist[tunum]+'\n\n'+tualist[tunum])
-                    root.update()
                     if tuorbon==0:
                         answerline['state']='disabled'
                         enterans['state']='disabled'
                         read['state']='normal'
+                    reading=False
+                    tuct['text']='Tossups: %s'%(tu)
+                    tossuppts['text']='Tossup Points: %s'%(tupts)
+                    ppg['text']='PP20TUH: %s'%(0 if tu==0 else tupts/tu*20)
+                    ptnct['text']='Powers/10s/Negs: %s'%('/'.join(str(i) for i in ptn))
+                    root.update()
+            else:
+                answerline['state']='disabled'
+                enterans['state']='disabled'
+                actualans=bonalist[bonnum][subbonnum]
+                if ansyet(givenans,actualans):
+                    curbpts+=10
                 reading=False
-                tuct['text']='Tossups: %s'%(tu)
-                tossuppts['text']='Tossup Points: %s'%(tupts)
-                ppg['text']='PP20TUH: %s'%(0 if tu==0 else tupts/tu*20)
-                ptnct['text']='Powers/10s/Negs: %s'%('/'.join(str(i) for i in ptn))
+                aread=bonlist[bonnum][:subbonnum]
+                allread=''
+                for n,i in enumerate(aread):
+                    allread+=i
+                    allread+="\n\n"+bonalist[bonnum][n]+"\n\n"
+                qcanvas.itemconfigure(qtext,text=allread+bonlist[bonnum][subbonnum]+"\n\n"+bonalist[bonnum][subbonnum])
+                if subbonnum==2:
+                    bon+=1
+                    bpts+=curbpts
+                    bagels[(30-curbpts)//10]+=1
+                    bonct['text']='Bonuses: %s'%(bon)
+                    bonuspts['text']='Bonus Points: %s'%(bpts)
+                    ppb['text']='PPB: %s'%(0 if bon==0 else bpts/bon)
+                    tttb['text']='30s/20s/10s/0s: %s'%('/'.join(str(i) for i in bagels))
+                    root.update()
     enterans=tk.Button(controlframe,text="Enter",command=checkanswer,state='disabled')
     enterans.grid(row=0,column=4)
     buzzer=tk.Button(controlframe,text="Buzz",command=buzzin)
@@ -263,7 +292,7 @@ def qscreen(tuorbon,timeint):
     timeo.grid(row=0,column=0)
     thyme.grid(row=0,column=1)
     def readq():
-        global reading,buzzed,tunum,dead,ansalrgiven,qskipped,bonnum
+        global reading,buzzed,tunum,dead,ansalrgiven,qskipped,bonnum,subbonnum,curbpts
         if not reading:
             reading=True
             buzzed=False
@@ -271,7 +300,12 @@ def qscreen(tuorbon,timeint):
             ansalrgiven=False
             qskipped=False
             tunum+=1
-            bonnum+=1
+            if subbonnum==2 or bonnum<0:
+                bonnum+=1
+                subbonnum=0
+                curbpts=0
+            else:
+                subbonnum+=1
             if tuorbon==0:
                 if tunum>=len(tulist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
@@ -283,9 +317,17 @@ def qscreen(tuorbon,timeint):
                 qcanvas.itemconfigure(qtext, font=("times new roman", 15))
                 read_tossup(qframe,qcanvas,qtext,thyme)
             elif tuorbon==1:
+                if bonnum>=len(bonlist):
+                    qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
+                    read['state']='disabled'
+                    thyme['state']='disabled'
+                    buzzer['state']='disabled'
+                    answerline['state']='disabled'
+                    return
                 if reading and tbrn==1:
                     buzzer['state']='disabled'
                     answerline['state']='normal'
+                    enterans['state']='normal'
                 qcanvas.itemconfigure(qtext, font=("times new roman", 13))
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
@@ -296,17 +338,27 @@ def qscreen(tuorbon,timeint):
         else:
             qskipped=True
             qframe.after_cancel(qctr)
-            tunum+=1
-            if tunum>=len(tulist):
-                qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
-                read['state']='disabled'
-                thyme['state']='disabled'
-                buzzer['state']='disabled'
-                return
             qskipped=False
             if tuorbon==0:
+                tunum+=1
+                if tunum>=len(tulist):
+                    qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
+                    read['state']='disabled'
+                    thyme['state']='disabled'
+                    buzzer['state']='disabled'
+                    return
                 read_tossup(qframe,qcanvas,qtext,thyme)
             elif tuorbon==1:
+                bonnum+=1
+                subbonnum=0
+                curbpts=0
+                if bonnum>=len(bonlist):
+                    qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
+                    read['state']='disabled'
+                    thyme['state']='disabled'
+                    buzzer['state']='disabled'
+                    answerline['state']='disabled'
+                    return
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
                 if tbrn==0:
@@ -338,19 +390,40 @@ def qscreen(tuorbon,timeint):
     buzzer.grid(row=0,column=2)
     qbt.grid(row=0,column=1,sticky='e')
     root.mainloop()
+def ansyet(givenans,actans):
+    if givenans.lower()==actans.lower():
+        return True
+    else:
+        return False
+
 def check_if_buzz_at_eotu():
-    global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer
+    global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext
     if reading==False and buzzed==False:
         dead=True
         tu+=1
+        qcanvas.itemconfigure(qtext,text=tulist[tunum]+'\n\n'+tualist[tunum])
         tuct['text']='Tossups: %s'%(tu)
         ppg['text']='PP20TUH: %s'%(0 if tu==0 else tupts/tu*20)
         buzzer['state']='disabled'
         root.update()
 def check_if_buzz_at_eobon():
-    global dead,bon,bonct,bonuspts,ppb,tttb
+    global dead,bon,bonct,bonuspts,ppb,tttb,curbpts,answerline
+    ans=is_this_correct.get()
+    if ans!="":
+        answerline.delete(0,len(ans))
+        if ansyet(ans,bonalist[bonnum][subbonnum]):
+            curbpts+=10
     if reading==False and ansalrgiven==False:
         dead=True
+        answerline['state']='disabled'
+        enterans['state']='disabled'
+        aread=bonlist[bonnum][:subbonnum]
+        allread=''
+        for n,i in enumerate(aread):
+            allread+=i
+            allread+="\n\n"+bonalist[bonnum][n]+"\n\n"
+        qcanvas.itemconfigure(qtext,text=allread+bonlist[bonnum][subbonnum]+"\n\n"+bonalist[bonnum][subbonnum])
+    
 def read_tossup(window,canvas,question_txt,timeint):
     global pm
     current_q = tulist[tunum]
@@ -381,21 +454,25 @@ def itertu(words, i, window,canvas,question_txt,timeint):
 
 def read_bonus(window,canvas,question_txt,timeint):
     current_q = bonlist[bonnum]
-    print(current_q)
     bonwords=current_q[subbonnum].split()
-    itertu(bonwords, 0, window,canvas,question_txt,timeint)
-def iterbon(words, i, window,canvas,question_txt,timeint):
+    aread = current_q[:subbonnum]
+    allread=''
+    for n,i in enumerate(aread):
+        allread+=i
+        allread+="\n\n"+bonalist[bonnum][n]+"\n\n"
+    iterbon(allread,bonwords, 0, window,canvas,question_txt,timeint)
+def iterbon(allread, words, i, window,canvas,question_txt,timeint):
     if i > len(words):
-        global reading,endctr
+        global reading,endctr,qctr
         reading=False
         endctr=window.after(10000,check_if_buzz_at_eobon)
         return
     if qskipped:
         return
-    if not buzzed:
-        canvas.itemconfigure(question_txt, text=' '.join(words[:i]))
+    if not ansalrgiven:
+        canvas.itemconfigure(question_txt, text=allread+' '.join(words[:i]))
         i += 1
-        qctr = window.after(timeint.get(), lambda: iterbon(words, i,window,canvas,question_txt,timeint))
+        qctr = window.after(timeint.get(), lambda: iterbon(allread,words, i,window,canvas,question_txt,timeint))
 setup()
 if ttbb<2:
     tbrn=ttbb
