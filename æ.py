@@ -1,6 +1,5 @@
 
 import tkinter as tk
-from tkinter import ttk
 ccccc=["Current Events", "Fine Arts", "Geography", "History", "Literature", "Mythology", "Philosophy", "Religion", "Science", "Social Science", "Trash"]
 sssssccccc={"Current Events Subcategories":["American Current Events", "Other Current Events"], "Fine Arts Subcategories":["American Fine Arts", "Audiovisual Fine Arts", "Auditory Fine Arts", "British Fine Arts", "European Fine Arts", "Opera", "Visual Fine Arts", "World Fine Arts", "Other Fine Arts"], "Geography Subcategories":["American Geography", "World Geography"], "History Subcategories":["American History", "British History", "European History", "Classical History", "World History", "Other History"], "Literature Subcategories":["American Literature", "British Literature", "European Literature", "Classical Literature", "World Literature", "Other Literature"], "Mythology Subcategories":["American Mythology", "Chinese Mythology", "Egyptian Mythology", "Greco-Roman Mythology", "Indian Mythology", "Japanese Mythology", "Norse Mythology", "Other East Asian Mythology", "Other Mythology"], "Philosophy Subcategories":["American Philosophy", "Classical Philosophy", "East Asian Philosophy", "European Philosophy", "Other Philosophy"], "Religion Subcategories":["American Religion", "Christianity", "East Asian Religion", "Islam", "Judaism", "Other Religion"], "Science Subcategories":["American Science", "Biology", "Chemistry", "Computer Science", "Math", "Physics", "World Science", "Other Science"], "Social Science Subcategories":["American Social Science", "Anthropology", "Economics", "Linguistics", "Political Science", "Psychology", "Sociology", "Other Social Science"], "Trash Subcategories":["American Trash", "Movies", "Music", "Sports", "Television", "Video Games", "Other Trash"]}
 ddddd=[str(i) for i in range(1,10)]
@@ -9,15 +8,19 @@ buzzed=False
 reading=False
 dead=False
 ansalrgiven=False
+timeoutctr=None
+endctr=None
 tu=0
 bon=0
 ptn=[0,0,0]
 bagels=[0,0,0,0]
 tupts=0
 bpts=0
-qnum=0
-qlist=["""A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858."""]
-alist=["Tokugawa Shogunate"]
+qnum=-1
+pm=0
+curwd=0
+qlist=["""A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858.""", """Two wolves named "Greedy" and "Ravenous" devour the food that this deity doesn't eat. This deity can see far from his throne of Hlidskjalf, and has information brought to him by the ravens Huginn and Muninn. This deity hung on his spear Gungnir from the World Tree Yggdrasil in order to master the runes, and he gave up one of his eyes to drink from Mimir's well. He rides the eight-legged steed Sleipnir and will be swallowed whole by Fenrir at Ragnarok. For 10 points, name this owner of Valhalla, the chief god of the Norse pantheon."""]
+alist=["Tokugawa Shogunate","Odin"]
 tbrn=0
 
 class ToolTip(object):
@@ -161,7 +164,6 @@ def qscreen(tuorbon,timeint):
     global buzzed
     root=tk.Tk()
     root.geometry("+20+20")
-    print(root.winfo_screenwidth(),root.winfo_screenheight())
     topf=tk.Frame(root)
     topf.grid(row=0,column=0)
     statframe=tk.LabelFrame(topf, text='Stats')
@@ -188,38 +190,47 @@ def qscreen(tuorbon,timeint):
     is_this_correct=tk.StringVar()
     answerline=tk.Entry(controlframe, textvariable = is_this_correct, width=30,state='disabled',)
     def buzzin():
-        global buzzed
+        global buzzed,timeoutctr
         buzzed=True
         answerline['state']='normal'
         enterans['state']='normal'
         buzzer['state']='disabled'
         read['state']='disabled'
-        root.after(10000,checkanswer)
+        timeoutctr=root.after(7500,checkanswer)
     def checkanswer():
-        global ansalrgiven
+        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr
         if not ansalrgiven:
-            global tu,tupts,bon,bpts,ptn,bagels
+            root.after_cancel(timeoutctr)
+            if endctr!=None:
+                qframe.after_cancel(endctr)
             givenans=is_this_correct.get()
             ansalrgiven=True
             answerline.delete(0,len(givenans))
             actualans=alist[qnum]
             if buzzed:
-                print(givenans,actualans)
                 if givenans.lower() == actualans.lower():
-                    print('yey you got it right ill fix this later')
-                    tupts+=10
+                    if curwd<=pm:
+                        tupts+=15
+                        ptn[0]+=1
+                    else:
+                        tupts+=10
+                        ptn[1]+=1
                 else:
                     if reading:
                         tupts-=5
-            if tbrn==0:
-                qcanvas.itemconfigure(qtext,text=qlist[qnum]+'\n\n'+alist[qnum])
-                root.update()
-                if tuorbon==0:
-                    answerline['state']='disabled'
-                    enterans['state']='disabled'
-                    read['state']='normal'
-                
-
+                        ptn[2]+=1
+                if tbrn==0:
+                    tu+=1
+                    qcanvas.itemconfigure(qtext,text=qlist[qnum]+'\n\n'+alist[qnum])
+                    root.update()
+                    if tuorbon==0:
+                        answerline['state']='disabled'
+                        enterans['state']='disabled'
+                        read['state']='normal'
+                tuct['text']='Tossups: %s'%(tu)
+                tossuppts['text']='Tossup Points: %s'%(tupts)
+                ppg['text']='PP20TUH: %s'%(0 if tu==0 else tupts/tu)
+                ptnct['text']='Powers/10s/Negs: %s'%('/'.join(str(i) for i in ptn))
     enterans=tk.Button(controlframe,text="Enter",command=checkanswer)
     enterans.grid(row=0,column=4)
     buzzer=tk.Button(controlframe,text="Buzz",command=buzzin)
@@ -233,8 +244,15 @@ def qscreen(tuorbon,timeint):
     timeo.grid(row=0,column=0)
     thyme.grid(row=0,column=1)
     def readq():
-        global reading
+        global reading,buzzed,qnum,dead,ansalrgiven
         reading=True
+        buzzed=False
+        dead=False
+        ansalrgiven=False
+        qnum+=1
+        if qnum>=len(qlist):
+            qcanvas.itemconfigure(qtext, text = "No more questions left 😔")
+            return
         if reading and tuorbon==0 or tuorbon==2:
             buzzer['state']='normal'
         if tuorbon==0:
@@ -275,29 +293,31 @@ def check_if_buzz_at_eoq():
     global dead,tu
     if reading==False and buzzed==False:
         dead=True
-    tu+=1
 def read_tossup(window,canvas,question_txt,timeint):
+    global pm
     current_q = qlist[qnum]
     powermark=current_q.find("(*)")
-    tu=current_q.split()
+    words=current_q.split()
     if powermark>-1:
         index=current_q[:powermark].count(" ")
-        tu.pop(index)
-        tu[index-1]+=" (*)"
-    words = current_q.split()
+        pm=index
+        words.pop(index)
+        words[index-1]+=" (*)"
+    else:
+        pm=-1
     iterative(words, 0, window,canvas,question_txt,timeint)
 def iterative(words, i, window,canvas,question_txt,timeint):
+    global curwd
+    curwd=i-1
     if i > len(words):
-        global reading
+        global reading,endctr
         reading=False
-        window.after(5000,check_if_buzz_at_eoq)
+        endctr=window.after(5000,check_if_buzz_at_eoq)
         return
     if not buzzed:
         canvas.itemconfigure(question_txt, text=' '.join(words[:i]))
         i += 1
-        window.after(timeint.get(), lambda: iterative(words, i,window,canvas,question_txt,timeint))   
-    else:
-        print('buzz')
+        window.after(timeint.get(), lambda: iterative(words, i,window,canvas,question_txt,timeint))
 
 def read_bonus(window,canvas,question_txt,timeint):
     current_q = """A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858."""
