@@ -1,0 +1,4 @@
+# yet-another-qb-reader
+This Python projct of mine will join the ever-growing list of quizbowl question readers out there. I decided to try and combine question readers like protobowl and bonus readers like pkbot to create an all-in-one program for reading questions. 
+
+More specifically, I plan to use the QuizDB database in order to access questions, then use simple Python GUI functions in order to have the program display the words one at a time. I plan on giving the tossups the same functionality as in protobowl and likewise with bonuses and pkbot, except for the fact that pkbot has a helpful function where even if the program may not initially detect your answer as being correct you can still say that you did in fact get it right, so I plan on giving the tossups this functionality alongside typo correction/spellcheck. 
