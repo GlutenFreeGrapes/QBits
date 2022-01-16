@@ -1,5 +1,5 @@
 
-import time, tkinter as tk
+import tkinter as tk
 from tkinter import ttk
 ccccc=["Current Events", "Fine Arts", "Geography", "History", "Literature", "Mythology", "Philosophy", "Religion", "Science", "Social Science", "Trash"]
 sssssccccc={"Current Events Subcategories":["American Current Events", "Other Current Events"], "Fine Arts Subcategories":["American Fine Arts", "Audiovisual Fine Arts", "Auditory Fine Arts", "British Fine Arts", "European Fine Arts", "Opera", "Visual Fine Arts", "World Fine Arts", "Other Fine Arts"], "Geography Subcategories":["American Geography", "World Geography"], "History Subcategories":["American History", "British History", "European History", "Classical History", "World History", "Other History"], "Literature Subcategories":["American Literature", "British Literature", "European Literature", "Classical Literature", "World Literature", "Other Literature"], "Mythology Subcategories":["American Mythology", "Chinese Mythology", "Egyptian Mythology", "Greco-Roman Mythology", "Indian Mythology", "Japanese Mythology", "Norse Mythology", "Other East Asian Mythology", "Other Mythology"], "Philosophy Subcategories":["American Philosophy", "Classical Philosophy", "East Asian Philosophy", "European Philosophy", "Other Philosophy"], "Religion Subcategories":["American Religion", "Christianity", "East Asian Religion", "Islam", "Judaism", "Other Religion"], "Science Subcategories":["American Science", "Biology", "Chemistry", "Computer Science", "Math", "Physics", "World Science", "Other Science"], "Social Science Subcategories":["American Social Science", "Anthropology", "Economics", "Linguistics", "Political Science", "Psychology", "Sociology", "Other Social Science"], "Trash Subcategories":["American Trash", "Movies", "Music", "Sports", "Television", "Video Games", "Other Trash"]}
@@ -7,6 +7,18 @@ ddddd=[str(i) for i in range(1,10)]
 cc,sscc,dd,ttoouurr,ttbb,tthhyymmee=None,None,None,None,None,None
 buzzed=False
 reading=False
+dead=False
+ansalrgiven=False
+tu=0
+bon=0
+ptn=[0,0,0]
+bagels=[0,0,0,0]
+tupts=0
+bpts=0
+qnum=0
+qlist=["""A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858."""]
+alist=["Tokugawa Shogunate"]
+tbrn=0
 
 class ToolTip(object):
     def __init__(self, widget):
@@ -163,18 +175,7 @@ def qscreen(tuorbon,timeint):
     bframe.grid(row=2,column=0)
     controlframe=tk.Frame(bframe)
     controlframe.grid(row=0,column=0)
-    
-
-
-
-
     qbt=tk.Button(topf,text='Quit',command=quit)
-    tu=0
-    bon=0
-    ptn=[0,0,0]
-    bagels=[0,0,0,0]
-    tupts=0
-    bpts=0
     buzzed=False
     tuct=tk.Label(statframe,text='Tossups: %s'%(tu))
     tossuppts=tk.Label(statframe,text='Tossup Points: %s'%(tupts))
@@ -193,18 +194,32 @@ def qscreen(tuorbon,timeint):
         enterans['state']='normal'
         buzzer['state']='disabled'
         read['state']='disabled'
-        #add stuff for time
+        root.after(10000,checkanswer)
     def checkanswer():
-        givenans=is_this_correct.get()
-        actualans="Tokugawa Shogunate"
-        if buzzed:
-            print(givenans,actualans)
-            if givenans.lower() == actualans.lower():
-                print('yey yuo got it')
-                return True
-            else:
-                print('oopie that wrong answre is %s'%actualans)
-        answerline.delete(0,len(givenans))
+        global ansalrgiven
+        if not ansalrgiven:
+            global tu,tupts,bon,bpts,ptn,bagels
+            givenans=is_this_correct.get()
+            ansalrgiven=True
+            answerline.delete(0,len(givenans))
+            actualans=alist[qnum]
+            if buzzed:
+                print(givenans,actualans)
+                if givenans.lower() == actualans.lower():
+                    print('yey you got it right ill fix this later')
+                    tupts+=10
+                else:
+                    if reading:
+                        tupts-=5
+            if tbrn==0:
+                qcanvas.itemconfigure(qtext,text=qlist[qnum]+'\n\n'+alist[qnum])
+                root.update()
+                if tuorbon==0:
+                    answerline['state']='disabled'
+                    enterans['state']='disabled'
+                    read['state']='normal'
+                
+
     enterans=tk.Button(controlframe,text="Enter",command=checkanswer)
     enterans.grid(row=0,column=4)
     buzzer=tk.Button(controlframe,text="Buzz",command=buzzin)
@@ -226,6 +241,11 @@ def qscreen(tuorbon,timeint):
             read_tossup(qframe,qcanvas,qtext,thyme)
         elif tuorbon==1:
             read_bonus(qframe,qcanvas,qtext,thyme)
+        else:
+            if tbrn==0:
+                read_tossup(qframe,qcanvas,qtext,thyme)
+            else:
+                read_bonus(qframe,qcanvas,qtext,thyme)
     read=tk.Button(controlframe,text="Next/Skip",command=readq)
     read.grid(row=0,column=0)
     if tuorbon==0:
@@ -250,13 +270,14 @@ def qscreen(tuorbon,timeint):
     answerline.grid(row=0,column=3)
     buzzer.grid(row=0,column=2)
     qbt.grid(row=0,column=1,sticky='e')
-    
     root.mainloop()
-    
-
-
+def check_if_buzz_at_eoq():
+    global dead,tu
+    if reading==False and buzzed==False:
+        dead=True
+    tu+=1
 def read_tossup(window,canvas,question_txt,timeint):
-    current_q = """A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858."""
+    current_q = qlist[qnum]
     powermark=current_q.find("(*)")
     tu=current_q.split()
     if powermark>-1:
@@ -269,6 +290,7 @@ def iterative(words, i, window,canvas,question_txt,timeint):
     if i > len(words):
         global reading
         reading=False
+        window.after(5000,check_if_buzz_at_eoq)
         return
     if not buzzed:
         canvas.itemconfigure(question_txt, text=' '.join(words[:i]))
@@ -281,7 +303,6 @@ def read_bonus(window,canvas,question_txt,timeint):
     current_q = """A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858."""
 
 setup()
-print(cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)
 qscreen(ttbb,tthhyymmee)
 
 # make new tk and display w text box, pp20tuh and ppb
