@@ -455,6 +455,10 @@ def itertu(words, i, window,canvas,question_txt,timeint):
 def read_bonus(window,canvas,question_txt,timeint):
     current_q = bonlist[bonnum]
     bonwords=current_q[subbonnum].split()
+    if subbonnum==0:
+        breakspace=current_q[subbonnum][:current_q[subbonnum].find("\n")].count(' ')
+        if breakspace>=0:
+            bonwords[breakspace+1]='\n'+bonwords[breakspace+1]
     aread = current_q[:subbonnum]
     allread=''
     for n,i in enumerate(aread):
@@ -474,8 +478,9 @@ def iterbon(allread, words, i, window,canvas,question_txt,timeint):
         i += 1
         qctr = window.after(timeint.get(), lambda: iterbon(allread,words, i,window,canvas,question_txt,timeint))
 setup()
-if ttbb<2:
-    tbrn=ttbb
-else:
-    tbrn=0
-qscreen(ttbb,tthhyymmee)
+if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
+    if ttbb<2:
+        tbrn=ttbb
+    else:
+        tbrn=0
+    qscreen(ttbb,tthhyymmee)
