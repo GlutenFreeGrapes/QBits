@@ -1,4 +1,4 @@
-import tkinter as tk
+import tkinter as tk,enchant
 ccccc=["Current Events", "Fine Arts", "Geography", "History", "Literature", "Mythology", "Philosophy", "Religion", "Science", "Social Science", "Trash"]
 sssssccccc={"Current Events Subcategories":["American Current Events", "Other Current Events"], "Fine Arts Subcategories":["American Fine Arts", "Audiovisual Fine Arts", "Auditory Fine Arts", "British Fine Arts", "European Fine Arts", "Opera", "Visual Fine Arts", "World Fine Arts", "Other Fine Arts"], "Geography Subcategories":["American Geography", "World Geography"], "History Subcategories":["American History", "British History", "European History", "Classical History", "World History", "Other History"], "Literature Subcategories":["American Literature", "British Literature", "European Literature", "Classical Literature", "World Literature", "Other Literature"], "Mythology Subcategories":["American Mythology", "Chinese Mythology", "Egyptian Mythology", "Greco-Roman Mythology", "Indian Mythology", "Japanese Mythology", "Norse Mythology", "Other East Asian Mythology", "Other Mythology"], "Philosophy Subcategories":["American Philosophy", "Classical Philosophy", "East Asian Philosophy", "European Philosophy", "Other Philosophy"], "Religion Subcategories":["American Religion", "Christianity", "East Asian Religion", "Islam", "Judaism", "Other Religion"], "Science Subcategories":["American Science", "Biology", "Chemistry", "Computer Science", "Math", "Physics", "World Science", "Other Science"], "Social Science Subcategories":["American Social Science", "Anthropology", "Economics", "Linguistics", "Political Science", "Psychology", "Sociology", "Other Social Science"], "Trash Subcategories":["American Trash", "Movies", "Music", "Sports", "Television", "Video Games", "Other Trash"]}
 ddddd=[str(i) for i in range(1,10)]
@@ -192,9 +192,9 @@ def qscreen(tuorbon,timeint):
     statframe.grid(row=0,column=0)
     qframe=tk.Frame(root)
     qframe.grid(row=1,column=0)
-    qcanvas=tk.Canvas(qframe,width=600,height=400,background="white")
+    qcanvas=tk.Canvas(qframe,width=600,height=500,background="white")
     qcanvas.pack()
-    qtext=qcanvas.create_text(int(qcanvas['width'])/2,int(qcanvas['height'])/2,text='Press [Next] to start', width=qcanvas['width'], fill="black",font=("times new roman", 15))
+    qtext=qcanvas.create_text(int(qcanvas['width'])/2,int(qcanvas['height'])/2,text='Press [Next/Skip] to start', width=qcanvas['width'], fill="black",font=("times new roman", 15))
     bframe=tk.LabelFrame(root, text='Controls')
     bframe.grid(row=2,column=0)
     controlframe=tk.Frame(bframe)
@@ -219,6 +219,19 @@ def qscreen(tuorbon,timeint):
         buzzer['state']='disabled'
         read['state']='disabled'
         timeoutctr=root.after(7500,checkanswer)
+    def prompt(gans,aans):
+        if gans=='idk':
+            return False
+        qcanvas.itemconfigure(qtext,text=qcanvas.itemcget(qtext,'text')+"\nWere you correct? ([Yes]/[No])\nYour answer: %s\nActual answer: %s"%(gans,aans))
+        #change to yes/no boxes
+        a=""
+        while a.lower()!="yes" or a.lower()!="no":
+            a=input()
+            if a.lower()=="yes":
+                return True
+            elif a.lower()=="no":
+                return False
+            
     def checkanswer():
         global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn
         if not ansalrgiven and not dead:
@@ -232,7 +245,7 @@ def qscreen(tuorbon,timeint):
             if tbrn==0:
                 actualans=tualist[tunum]
                 if buzzed:
-                    if ansyet(givenans,actualans):
+                    if close_enough(givenans,actualans):
                         if curwd<=pm:
                             tupts+=15
                             ptn[0]+=1
@@ -241,8 +254,16 @@ def qscreen(tuorbon,timeint):
                             ptn[1]+=1
                     else:
                         if reading:
-                            tupts-=5# add "were you correct"
-                            ptn[2]+=1
+                            if prompt(givenans,actualans):
+                                if curwd<=pm:
+                                    tupts+=15
+                                    ptn[0]+=1
+                                else:
+                                    tupts+=10
+                                    ptn[1]+=1
+                            else:
+                                tupts-=5
+                                ptn[2]+=1
                     tu+=1
                     qcanvas.itemconfigure(qtext,text=tulist[tunum]+'\n\n'+tualist[tunum])
                     answerline['state']='disabled'
@@ -260,10 +281,13 @@ def qscreen(tuorbon,timeint):
                 answerline['state']='disabled'
                 enterans['state']='disabled'
                 actualans=bonalist[bonnum][subbonnum]
-                if ansyet(givenans,actualans):
+                if close_enough(givenans,actualans):
                     curbpts+=10
-                else:# add "were you correct"
-                    curbpts+=0
+                else:
+                    if prompt(givenans,actualans):
+                        curbpts+=10
+                    else:
+                        curbpts+=0
                 reading=False
                 aread=bonlist[bonnum][:subbonnum]
                 allread=''
@@ -430,11 +454,21 @@ def qscreen(tuorbon,timeint):
     buzzer.grid(row=0,column=2)
     qbt.grid(row=0,column=1,sticky='e')
     root.mainloop()
-def ansyet(givenans,actans): #improve later
-    if givenans.lower()==actans.lower():
-        return True
+def close_enough(str1,str2):
+    dna=str2.find("[")
+    if dna<0:
+        dna=str2.find("do not accept")
+        if dna<0:
+            dna=str2.find('<')
+    if dna<0:
+        if enchant.utils.levenshtein(str1,str2)<len(str2)/2:
+            return True
     else:
-        return False
+        s=str2[:dna]
+        print(s)
+        if enchant.utils.levenshtein(s,str1)<len(s)/2:
+            return True
+    return False
 
 def check_if_buzz_at_eotu():
     global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext
@@ -451,7 +485,7 @@ def check_if_buzz_at_eobon():
     ans=is_this_correct.get()
     if ans!="":
         answerline.delete(0,len(ans))
-        if ansyet(ans,bonalist[bonnum][subbonnum]):
+        if close_enough(ans,bonalist[bonnum][subbonnum]):
             curbpts+=10
     if reading==False and ansalrgiven==False:
         dead=True
