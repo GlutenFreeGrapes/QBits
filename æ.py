@@ -1,4 +1,5 @@
 import tkinter as tk,enchant
+from tkinter import messagebox
 ccccc=["Current Events", "Fine Arts", "Geography", "History", "Literature", "Mythology", "Philosophy", "Religion", "Science", "Social Science", "Trash"]
 sssssccccc={"Current Events Subcategories":["American Current Events", "Other Current Events"], "Fine Arts Subcategories":["American Fine Arts", "Audiovisual Fine Arts", "Auditory Fine Arts", "British Fine Arts", "European Fine Arts", "Opera", "Visual Fine Arts", "World Fine Arts", "Other Fine Arts"], "Geography Subcategories":["American Geography", "World Geography"], "History Subcategories":["American History", "British History", "European History", "Classical History", "World History", "Other History"], "Literature Subcategories":["American Literature", "British Literature", "European Literature", "Classical Literature", "World Literature", "Other Literature"], "Mythology Subcategories":["American Mythology", "Chinese Mythology", "Egyptian Mythology", "Greco-Roman Mythology", "Indian Mythology", "Japanese Mythology", "Norse Mythology", "Other East Asian Mythology", "Other Mythology"], "Philosophy Subcategories":["American Philosophy", "Classical Philosophy", "East Asian Philosophy", "European Philosophy", "Other Philosophy"], "Religion Subcategories":["American Religion", "Christianity", "East Asian Religion", "Islam", "Judaism", "Other Religion"], "Science Subcategories":["American Science", "Biology", "Chemistry", "Computer Science", "Math", "Physics", "World Science", "Other Science"], "Social Science Subcategories":["American Social Science", "Anthropology", "Economics", "Linguistics", "Political Science", "Psychology", "Sociology", "Other Social Science"], "Trash Subcategories":["American Trash", "Movies", "Music", "Sports", "Television", "Video Games", "Other Trash"]}
 ddddd=[str(i) for i in range(1,10)]
@@ -210,7 +211,7 @@ def qscreen(tuorbon,timeint):
     ppb=tk.Label(statframe,text='PPB: %s'%(0 if bon==0 else bpts/bon))
     tttb=tk.Label(statframe,text='30s/20s/10s/0s: %s'%('/'.join(str(i) for i in bagels)))
     is_this_correct=tk.StringVar()
-    answerline=tk.Entry(controlframe, textvariable = is_this_correct, width=30,state='disabled',)
+    answerline=tk.Entry(controlframe, textvariable = is_this_correct, width=30,state='disabled')
     def buzzin():
         global buzzed,timeoutctr
         buzzed=True
@@ -220,18 +221,9 @@ def qscreen(tuorbon,timeint):
         read['state']='disabled'
         timeoutctr=root.after(7500,checkanswer)
     def prompt(gans,aans):
-        if gans=='idk':
+        if gans.strip()=='idk' or gans.strip()=='':
             return False
-        qcanvas.itemconfigure(qtext,text=qcanvas.itemcget(qtext,'text')+"\nWere you correct? ([Yes]/[No])\nYour answer: %s\nActual answer: %s"%(gans,aans))
-        #change to yes/no boxes
-        a=""
-        while a.lower()!="yes" or a.lower()!="no":
-            a=input()
-            if a.lower()=="yes":
-                return True
-            elif a.lower()=="no":
-                return False
-            
+        return messagebox.askyesno("Were you correct?","Were you correct?\nYour answer: %s\nActual answer: %s"%(gans,aans))
     def checkanswer():
         global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn
         if not ansalrgiven and not dead:
@@ -245,7 +237,7 @@ def qscreen(tuorbon,timeint):
             if tbrn==0:
                 actualans=tualist[tunum]
                 if buzzed:
-                    if close_enough(givenans,actualans):
+                    if close_enough(givenans.lower(),actualans.lower()):
                         if curwd<=pm:
                             tupts+=15
                             ptn[0]+=1
@@ -281,7 +273,7 @@ def qscreen(tuorbon,timeint):
                 answerline['state']='disabled'
                 enterans['state']='disabled'
                 actualans=bonalist[bonnum][subbonnum]
-                if close_enough(givenans,actualans):
+                if close_enough(givenans.lower(),actualans.lower()):
                     curbpts+=10
                 else:
                     if prompt(givenans,actualans):
@@ -313,7 +305,7 @@ def qscreen(tuorbon,timeint):
     if reading==False:
         buzzer['state']='disabled'
     tcframe=tk.Frame(bframe)
-    tcframe.grid(row=1,column=0)
+    tcframe.grid(row=2,column=0)
     timeo=tk.Label(tcframe, text = 'Time between each word (ms): ', font=('calibri',10, 'bold'))
     thyme = tk.Scale(tcframe, from_=0, to=500, orient=tk.HORIZONTAL, length=400, tickinterval=50)
     thyme.set(timeint)
@@ -362,7 +354,6 @@ def qscreen(tuorbon,timeint):
                 qcanvas.itemconfigure(qtext, font=("times new roman", 13))
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
-                read['state']='disabled'
                 if tbrn==0:
                     if tunum>=len(tulist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
@@ -471,7 +462,7 @@ def close_enough(str1,str2):
     return False
 
 def check_if_buzz_at_eotu():
-    global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext
+    global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,read
     if reading==False and buzzed==False:
         dead=True
         tu+=1
@@ -479,6 +470,7 @@ def check_if_buzz_at_eotu():
         tuct['text']='Tossups: %s'%(tu)
         ppg['text']='PP20TUH: %s'%(0 if tu==0 else tupts/tu*20)
         buzzer['state']='disabled'
+        read['state']='normal'
         root.update()
 def check_if_buzz_at_eobon():
     global dead,bon,bonct,bonuspts,ppb,tttb,curbpts,answerline
@@ -559,3 +551,4 @@ if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
         tbrn=0
     qscreen(ttbb,tthhyymmee)
 #add infobox for controls and how to play
+#turn tournaments option into a dropdown sometime when granted access to quizdb db
