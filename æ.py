@@ -39,12 +39,11 @@ answerline=None
 qcanvas=None
 qtext=None
 is_this_correct=None
-tulist=["""A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858.""", """Two wolves named "Greedy" and "Ravenous" devour the food that this deity doesn't eat. This deity can see far from his throne of Hlidskjalf, and has information brought to him by the ravens Huginn and Muninn. This deity hung on his spear Gungnir from the World Tree Yggdrasil in order to master the runes, and he gave up one of his eyes to drink from Mimir's well. He rides the eight-legged steed Sleipnir and will be swallowed whole by Fenrir at Ragnarok. For 10 points, name this owner of Valhalla, the chief god of the Norse pantheon."""]
-tualist=["Tokugawa Shogunate","Odin"]
+tbrn=0
+tulist=["""A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858.""", """Two wolves named "Greedy" and "Ravenous" devour the food that this deity doesn't eat. This deity can see far from his throne of Hlidskjalf, and has information brought to him by the ravens Huginn and Muninn. This deity hung on his spear Gungnir from the World Tree Yggdrasil in order to master the runes, and he gave up one of his eyes to drink from Mimir's well. He rides the eight-legged steed Sleipnir and will be swallowed whole by Fenrir at Ragnarok. For 10 points, name this owner of Valhalla, the chief god of the Norse pantheon.""","""A son of Zeus and Electra became one of the founders of this city after fleeing Samothrace whenZeus killed his brother Iasion. This city's territory was at one point divided between the brothers Ilusand Assaracus. A deceptive king of this city offered his daughter Hesione to a sea monster sent byPoseidon, who was angry because that king failed to (*) pay Poseidon and Apollo for building this city'swalls. Heracles sacked this city when he did not receive his promised immortal horses from Laomedon,who received those horses from Zeus as compensation for the rape of his brother, Ganymede. For 10points, name this Anatolian city ruled by Priam during a ten-year war with the Greeks."""]
+tualist=["Tokugawa Shogunate","Odin","Troy [or Troia; or Ilium; or Ilion]"]
 bonlist=[["""In 2013, this man was succeeded as Director of the FBI by James Comey, before being appointed to his current post by Deputy Attorney General Rod Rosenstein. For 10 points each:\nName this Republican Special Counsel for the Department of Justice, who is currently overseeing an investigation into Russian interference in the 2016 US Presidential Election.""", """This former Trump campaign advisor entered a plea deal with Mueller, which resulted in additional charges for him and Paul Manafort, such as conspiracy against the United States from when they lobbied for Ukraine.""","""Gates and Manafort were lobbyists for this pro-Russian Ukrainian Party. Former President Viktor Yanukovych was the first member of this party to be elected president before leaving office in 2014."""],["""In this text, a woman is impregnated by eating a lingonberry and gives birth to a son who becomes King of Karelia. For 10 points each:\nName this epic which contains the story of the virgin Marjatta. In another story from this epic, a comb begins to bleed after its hero drowns trying to capture a swan to win Louhi's daughter's hand in marriage.""","""The story of Marjatta symbolizes the Christianization of this European country, which reveres Ilmarinen and Väinämöinen as mythological heroes and regards the Kalevala as its national epic.""","""In Finland, the word for Satan, “saatana,” is frequently used as a swear word in conjunction with a word thought to refer to this chief Finnish god. This god of the sky conjured lightning from a hammer, axe or sword."""]]
 bonalist=[["""Robert Mueller""", """Rick Gates""","""Party of Regions"""],["""Kalevala""","""Finland""","""Ukko"""]]
-
-tbrn=0
 
 class ToolTip(object):
     def __init__(self, widget):
@@ -57,7 +56,7 @@ class ToolTip(object):
         if self.tipwindow or not self.text:
             return
         x, y, cx, cy = self.widget.bbox("insert")
-        x = x + self.widget.winfo_rootx() + 25
+        x = x + cx+self.widget.winfo_rootx()+self.widget.winfo_width()
         y = y + cy + self.widget.winfo_rooty()
         self.tipwindow = tw = tk.Toplevel(self.widget)
         tw.wm_overrideredirect(1)
@@ -169,31 +168,37 @@ def setup():
         tint=thyme.get()
         handback(c,sc,d,tour,tb,tint)
         root.destroy()
-    sumbit=tk.Button(fram3,text = 'Go', command = submit)
-    quibt=tk.Button(fram3,text = 'Quit', command = quit)
+    fram4=tk.Frame(root)
+    fram4.grid(row=3,column=0)
+    abt=tk.Button(fram4,text = 'About')
+    CreateToolTip(abt, text = "Hello, I'm GlutenFreeGrapes. I created this program in January 2022 \nas an all-in-one self-study tool. \n\n★★★★★Why this?★★★★★\nI made this because every quizbowl studying tool out there was either \na tossup reader or a bonus reader, but never both. So, I decided to try \nand make one myself. \n\n★★★★★Credits★★★★★\nThis was inspired by Kevin Kwok's Protobowl, Karan Gurazada's QuizBug, \nand Pratyush Jaishanker's pkbot. \nThis program uses QuizDB, which was developed by Raynor Kuang.\n\n★★★★★Contact★★★★★\nMy Github is @GlutenFreeGrapes. \nMy hsquizbowl forums username is GlutenFreeGrapes. ")
+    contr=tk.Button(fram4,text = 'How to Play')
+    CreateToolTip(contr, text = """When the program is run, you will be prompted with a screen asking for inputs on what categories you \nwant, difficulties, etc. Use the dropdown menus to select your options. There are also options for \nchanging the time interval between words and whether you want tossups only, bonuses only, or tossups \nand bonuses. When you hit the [Go] button, the windo should momentarily close out only for another \nto open. The screen should read "Press [Next/Skip] to start". Press the Next/Skip button, and the \nreading should start. As of now I have not bound keys to the buttons, so no hitting [space] to buzz \nor [enter] to submit your answer. At the bottom of the screen there should be several buttons(all \nshould be disabled except the [Next/Skip] button), a space to type answers in, and a large slider. \nThe slider allows you to live-adjust the speed at which the program reads you the questions. \n★Tossups - When you start the reading, the program will read the tossup one word at a time. The \n[Next/Skip] button stays enabled in case you want to skip tossups. The [Buzz] button will be enabled so \nthat you can buzz in, and when you do, it disables itself and the [Next/Skip] button, and enables the \ntext entry box, and a timer for 8 seconds. When you have finished typing, hit the [Enter] button(in the \nGUI, not on your keyboard) and the program should either display the tossup and the correct answer or \nprompt you with a message asking whether your provided answer was correct. Once this happens, you should \nsee that your number of tossups you've heard, number of tossup points, points per 20 tossups heard, and \nyour powers/10s/negs ratio will have updated. When you have run out of tossups, everything will be \ndisabled, but you will see your stats. \n★Bonuses - When you start the reading, the program will read the bonus one word at a time. The \n[Next/Skip] button stays enabled in case you want to skip entire bonuses. The [Buzz] button will be \ndisabled so that you cannot buzz in, but the text entry and [Enter] have been enabled so you can simply \ntype in as the question is being read and submit any time the bonus is being read. There will be a 10 \nsecond timer at the end when it reads each part of the bonus, in case you choose to answer after the \nquestion has finished. When you have finished typing, hit the [Enter] button(in the GUI, not on your \nkeyboard) and the program should either display the part of the bonus and the correct answer or prompt \nyou with a message asking whether your provided answer was correct. Each time you complete a part of the \nbonus it will display all the previous parts of that bonus above the current bonus. After you have \ncompleted all 3 parts of the bonus, you should see that your number of bonus you've heard, number of \nbonus points, points per bonus, and your 30s/20s/10s/0s ratio will have updated. When you have run out \nof bonuses, everything will be disabled, but you will see your stats. \n★Tossups and Bonuses - This option basically has the same functionality as tossups and bonuses, just \ncombined. I've made it such that even if you may have gotten a tossup wrong you will still be read a \nbonus after it, because I have the program simply alternate between tossups and bonuses. """)
+    sumbit=tk.Button(fram4,text = 'Go', command = submit)
+    quibt=tk.Button(fram4,text = 'Quit', command = quit)
     tuorbon.grid(row=0,column=0, sticky="e")
     tu.grid(row=0,column=1, sticky="w")
     bon.grid(row=0,column=2, sticky="w")
     tunbon.grid(row=0,column=3, sticky="w")
     tubonex.grid(row=0,column=4, sticky="w")
     CreateToolTip(tubonex, text = 'Tossups only → tk\nBonuses only → pk\nTossups and bonuses → basically a normal packet reading')
-    sumbit.grid(row=1,column=1)
-    quibt.grid(row=1,column=2)
+    abt.grid(row=0,column=0,padx=(0,10),pady=(0,5))
+    contr.grid(row=0,column=1,padx=(10,10),pady=(0,5))
+    sumbit.grid(row=0,column=2,padx=(10,10),pady=(0,5))
+    quibt.grid(row=0,column=3,padx=(10,0),pady=(0,5))
     root.mainloop()
-
-
-
 def qscreen(tuorbon,timeint):
     global buzzed,root,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct
     root=tk.Tk()
     root.geometry("+20+20")
+    root.title('yet another qb reader')
     topf=tk.Frame(root)
     topf.grid(row=0,column=0)
     statframe=tk.LabelFrame(topf, text='Stats')
     statframe.grid(row=0,column=0)
     qframe=tk.Frame(root)
     qframe.grid(row=1,column=0)
-    qcanvas=tk.Canvas(qframe,width=600,height=500,background="white")
+    qcanvas=tk.Canvas(qframe,width=600,height=400,background="white")
     qcanvas.pack()
     qtext=qcanvas.create_text(int(qcanvas['width'])/2,int(qcanvas['height'])/2,text='Press [Next/Skip] to start', width=qcanvas['width'], fill="black",font=("times new roman", 15))
     bframe=tk.LabelFrame(root, text='Controls')
@@ -219,7 +224,10 @@ def qscreen(tuorbon,timeint):
         enterans['state']='normal'
         buzzer['state']='disabled'
         read['state']='disabled'
-        timeoutctr=root.after(7500,checkanswer)
+        if endctr:
+            qframe.after_cancel(endctr)
+        answerline.focus_set()
+        timeoutctr=root.after(8000,checkanswer)
     def prompt(gans,aans):
         if gans.strip()=='idk' or gans.strip()=='':
             return False
@@ -256,6 +264,14 @@ def qscreen(tuorbon,timeint):
                             else:
                                 tupts-=5
                                 ptn[2]+=1
+                        else:
+                            if prompt(givenans,actualans):
+                                if curwd<=pm:
+                                    tupts+=15
+                                    ptn[0]+=1
+                                else:
+                                    tupts+=10
+                                    ptn[1]+=1
                     tu+=1
                     qcanvas.itemconfigure(qtext,text=tulist[tunum]+'\n\n'+tualist[tunum])
                     answerline['state']='disabled'
@@ -333,6 +349,9 @@ def qscreen(tuorbon,timeint):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                     read['state']='disabled'
                     thyme['state']='disabled'
+                    buzzer['state']='disabled'
+                    answerline['state']='disabled'
+                    enterans['state']='disabled'
                     return
                 if reading and tbrn==0:
                     buzzer['state']='normal'
@@ -352,6 +371,7 @@ def qscreen(tuorbon,timeint):
                     answerline['state']='normal'
                     enterans['state']='normal'
                 qcanvas.itemconfigure(qtext, font=("times new roman", 13))
+                answerline.focus_set()
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
                 if tbrn==0:
@@ -359,6 +379,9 @@ def qscreen(tuorbon,timeint):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                         read['state']='disabled'
                         thyme['state']='disabled'
+                        buzzer['state']='disabled'
+                        answerline['state']='disabled'
+                        enterans['state']='disabled'
                         return
                     if reading and tbrn==0:
                         buzzer['state']='normal'
@@ -370,10 +393,16 @@ def qscreen(tuorbon,timeint):
                         answerline['state']='normal'
                         enterans['state']='normal'
                     qcanvas.itemconfigure(qtext, font=("times new roman", 13))
+                    answerline.focus_set()
                     read_bonus(qframe,qcanvas,qtext,thyme)
         else:
             qskipped=True
-            qframe.after_cancel(qctr)
+            if qctr:
+                qframe.after_cancel(qctr)
+            if endctr:
+                qframe.after_cancel(endctr)
+            if timeoutctr:
+                root.after_cancel(timeoutctr)
             qskipped=False
             if tuorbon==0:
                 tunum+=1
@@ -382,6 +411,8 @@ def qscreen(tuorbon,timeint):
                     read['state']='disabled'
                     thyme['state']='disabled'
                     buzzer['state']='disabled'
+                    answerline['state']='disabled'
+                    enterans['state']='disabled'
                     return
                 read_tossup(qframe,qcanvas,qtext,thyme)
             elif tuorbon==1:
@@ -396,6 +427,7 @@ def qscreen(tuorbon,timeint):
                     answerline['state']='disabled'
                     enterans['state']='disabled'
                     return
+                answerline.focus_set()
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
                 if tbrn==0:
@@ -405,6 +437,8 @@ def qscreen(tuorbon,timeint):
                         read['state']='disabled'
                         thyme['state']='disabled'
                         buzzer['state']='disabled'
+                        answerline['state']='disabled'
+                        enterans['state']='disabled'
                         return
                     read_tossup(qframe,qcanvas,qtext,thyme)
                 else:
@@ -419,6 +453,7 @@ def qscreen(tuorbon,timeint):
                         answerline['state']='disabled'
                         enterans['state']='disabled'
                         return
+                    answerline.focus_set()
                     read_bonus(qframe,qcanvas,qtext,thyme)
     read=tk.Button(controlframe,text="Next/Skip",command=readq)
     read.grid(row=0,column=0)
@@ -456,13 +491,11 @@ def close_enough(str1,str2):
             return True
     else:
         s=str2[:dna]
-        print(s)
         if enchant.utils.levenshtein(s,str1)<len(s)/2:
             return True
     return False
-
 def check_if_buzz_at_eotu():
-    global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,read
+    global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext
     if reading==False and buzzed==False:
         dead=True
         tu+=1
@@ -470,7 +503,6 @@ def check_if_buzz_at_eotu():
         tuct['text']='Tossups: %s'%(tu)
         ppg['text']='PP20TUH: %s'%(0 if tu==0 else tupts/tu*20)
         buzzer['state']='disabled'
-        read['state']='normal'
         root.update()
 def check_if_buzz_at_eobon():
     global dead,bon,bonct,bonuspts,ppb,tttb,curbpts,answerline
@@ -489,7 +521,6 @@ def check_if_buzz_at_eobon():
             allread+=i
             allread+="\n\n"+bonalist[bonnum][n]+"\n\n"
         qcanvas.itemconfigure(qtext,text=allread+bonlist[bonnum][subbonnum]+"\n\n"+bonalist[bonnum][subbonnum])
-    
 def read_tossup(window,canvas,question_txt,timeint):
     global pm
     current_q = tulist[tunum]
@@ -517,7 +548,6 @@ def itertu(words, i, window,canvas,question_txt,timeint):
         canvas.itemconfigure(question_txt, text=' '.join(words[:i]))
         i += 1
         qctr = window.after(timeint.get(), lambda: itertu(words, i,window,canvas,question_txt,timeint))
-
 def read_bonus(window,canvas,question_txt,timeint):
     current_q = bonlist[bonnum]
     bonwords=current_q[subbonnum].split()
@@ -550,5 +580,4 @@ if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
     else:
         tbrn=0
     qscreen(ttbb,tthhyymmee)
-#add infobox for controls and how to play
 #turn tournaments option into a dropdown sometime when granted access to quizdb db
