@@ -216,14 +216,17 @@ def qscreen(tuorbon,timeint):
     ppb=tk.Label(statframe,text='PPB: %s'%(0 if bon==0 else bpts/bon))
     tttb=tk.Label(statframe,text='30s/20s/10s/0s: %s'%('/'.join(str(i) for i in bagels)))
     is_this_correct=tk.StringVar()
-    answerline=tk.Entry(controlframe, textvariable = is_this_correct, width=30,state='disabled')
     def buzzin():
-        global buzzed,timeoutctr
+        global buzzed,timeoutctr,root,enterans
+        root.unbind("<space>")        
         buzzed=True
         answerline['state']='normal'
         enterans['state']='normal'
+        root.bind("<Return>", lambda event: checkanswer())
         buzzer['state']='disabled'
+        root.unbind("<space>")
         read['state']='disabled'
+        root.unbind('n')
         if endctr:
             qframe.after_cancel(endctr)
         answerline.focus_set()
@@ -234,7 +237,9 @@ def qscreen(tuorbon,timeint):
         return messagebox.askyesno("Were you correct?","Were you correct?\nYour answer: %s\nActual answer: %s"%(gans,aans))
     def checkanswer():
         global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn
+        
         if not ansalrgiven and not dead:
+            root.unbind("<Return>")
             if timeoutctr!=None:
                 root.after_cancel(timeoutctr)
             if endctr!=None:
@@ -276,7 +281,9 @@ def qscreen(tuorbon,timeint):
                     qcanvas.itemconfigure(qtext,text=tulist[tunum]+'\n\n'+tualist[tunum])
                     answerline['state']='disabled'
                     enterans['state']='disabled'
+                    root.unbind("<Return>")
                     read['state']='normal'
+                    root.bind('n', lambda event: readq())
                     reading=False
                     tuct['text']='Tossups: %s'%(tu)
                     tossuppts['text']='Tossup Points: %s'%(tupts)
@@ -288,6 +295,7 @@ def qscreen(tuorbon,timeint):
             else:
                 answerline['state']='disabled'
                 enterans['state']='disabled'
+                root.unbind("<Return>")
                 actualans=bonalist[bonnum][subbonnum]
                 if close_enough(givenans.lower(),actualans.lower()):
                     curbpts+=10
@@ -304,6 +312,7 @@ def qscreen(tuorbon,timeint):
                     allread+="\n\n"+bonalist[bonnum][n]+"\n\n"
                 qcanvas.itemconfigure(qtext,text=allread+bonlist[bonnum][subbonnum]+"\n\n"+bonalist[bonnum][subbonnum])
                 read['state']='normal'
+                root.bind('n', lambda event: readq())
                 if subbonnum==2:
                     bon+=1
                     bpts+=curbpts
@@ -315,11 +324,13 @@ def qscreen(tuorbon,timeint):
                     root.update()
                     if tuorbon==2:
                         tbrn=1-tbrn
+    answerline=tk.Entry(controlframe, textvariable = is_this_correct, width=30,state='disabled')
     enterans=tk.Button(controlframe,text="Enter",command=checkanswer,state='disabled')
     enterans.grid(row=0,column=4)
     buzzer=tk.Button(controlframe,text="Buzz",command=buzzin)
     if reading==False:
         buzzer['state']='disabled'
+        root.unbind("<space>")
     tcframe=tk.Frame(bframe)
     tcframe.grid(row=2,column=0)
     timeo=tk.Label(tcframe, text = 'Time between each word (ms): ', font=('calibri',10, 'bold'))
@@ -348,28 +359,38 @@ def qscreen(tuorbon,timeint):
                 if tunum>=len(tulist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                     read['state']='disabled'
+                    root.unbind('n')
                     thyme['state']='disabled'
                     buzzer['state']='disabled'
+                    root.unbind("<space>")
                     answerline['state']='disabled'
                     enterans['state']='disabled'
+                    root.unbind("<Return>")
                     return
                 if reading and tbrn==0:
                     buzzer['state']='normal'
+                    root.bind("<space>", lambda event: buzzin())
+                    
                 qcanvas.itemconfigure(qtext, font=("times new roman", 15))
                 read_tossup(qframe,qcanvas,qtext,thyme)
             elif tuorbon==1:
                 if bonnum>=len(bonlist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                     read['state']='disabled'
+                    root.unbind('n')
                     thyme['state']='disabled'
                     buzzer['state']='disabled'
+                    root.unbind("<space>")
                     answerline['state']='disabled'
                     enterans['state']='disabled'
+                    root.unbind("<Return>")
                     return
                 if reading and tbrn==1:
                     buzzer['state']='disabled'
+                    root.unbind("<space>")
                     answerline['state']='normal'
                     enterans['state']='normal'
+                    root.bind("<Return>", lambda event: checkanswer())
                 qcanvas.itemconfigure(qtext, font=("times new roman", 13))
                 answerline.focus_set()
                 read_bonus(qframe,qcanvas,qtext,thyme)
@@ -378,20 +399,26 @@ def qscreen(tuorbon,timeint):
                     if tunum>=len(tulist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                         read['state']='disabled'
+                        root.unbind('n')
                         thyme['state']='disabled'
                         buzzer['state']='disabled'
+                        root.unbind("<space>")
                         answerline['state']='disabled'
                         enterans['state']='disabled'
+                        root.unbind("<Return>")
                         return
                     if reading and tbrn==0:
                         buzzer['state']='normal'
+                        root.bind("<space>", lambda event: buzzin())
                     qcanvas.itemconfigure(qtext, font=("times new roman", 15))
                     read_tossup(qframe,qcanvas,qtext,thyme)
                 else:
                     if reading and tbrn==1:
                         buzzer['state']='disabled'
+                        root.unbind("<space>")
                         answerline['state']='normal'
                         enterans['state']='normal'
+                        root.bind("<Return>", lambda event: checkanswer())
                     qcanvas.itemconfigure(qtext, font=("times new roman", 13))
                     answerline.focus_set()
                     read_bonus(qframe,qcanvas,qtext,thyme)
@@ -409,10 +436,13 @@ def qscreen(tuorbon,timeint):
                 if tunum>=len(tulist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                     read['state']='disabled'
+                    root.unbind('n')
                     thyme['state']='disabled'
                     buzzer['state']='disabled'
+                    root.unbind("<space>")
                     answerline['state']='disabled'
                     enterans['state']='disabled'
+                    root.unbind("<Return>")
                     return
                 read_tossup(qframe,qcanvas,qtext,thyme)
             elif tuorbon==1:
@@ -422,10 +452,13 @@ def qscreen(tuorbon,timeint):
                 if bonnum>=len(bonlist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                     read['state']='disabled'
+                    root.unbind('n')
                     thyme['state']='disabled'
                     buzzer['state']='disabled'
+                    root.unbind("<space>")
                     answerline['state']='disabled'
                     enterans['state']='disabled'
+                    root.unbind("<Return>")
                     return
                 answerline.focus_set()
                 read_bonus(qframe,qcanvas,qtext,thyme)
@@ -435,10 +468,13 @@ def qscreen(tuorbon,timeint):
                     if tunum>=len(tulist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                         read['state']='disabled'
+                        root.unbind('n')
                         thyme['state']='disabled'
                         buzzer['state']='disabled'
+                        root.unbind("<space>")
                         answerline['state']='disabled'
                         enterans['state']='disabled'
+                        root.unbind("<Return>")
                         return
                     read_tossup(qframe,qcanvas,qtext,thyme)
                 else:
@@ -448,14 +484,18 @@ def qscreen(tuorbon,timeint):
                     if bonnum>=len(bonlist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                         read['state']='disabled'
+                        root.unbind('n')
                         thyme['state']='disabled'
                         buzzer['state']='disabled'
+                        root.unbind("<space>")
                         answerline['state']='disabled'
                         enterans['state']='disabled'
+                        root.unbind("<Return>")
                         return
                     answerline.focus_set()
                     read_bonus(qframe,qcanvas,qtext,thyme)
     read=tk.Button(controlframe,text="Next/Skip",command=readq)
+    root.bind('n', lambda event: readq())
     read.grid(row=0,column=0)
     if tuorbon==0:
         tuct.grid(row=0,column=0)
@@ -479,6 +519,7 @@ def qscreen(tuorbon,timeint):
     answerline.grid(row=0,column=3)
     buzzer.grid(row=0,column=2)
     qbt.grid(row=0,column=1,sticky='e')
+    root.focus_force()
     root.mainloop()
 def close_enough(str1,str2):
     dna=str2.find("[")
@@ -503,6 +544,7 @@ def check_if_buzz_at_eotu():
         tuct['text']='Tossups: %s'%(tu)
         ppg['text']='PP20TUH: %s'%(0 if tu==0 else tupts/tu*20)
         buzzer['state']='disabled'
+        root.unbind("<space>")
         root.update()
 def check_if_buzz_at_eobon():
     global dead,bon,bonct,bonuspts,ppb,tttb,curbpts,answerline
@@ -515,6 +557,7 @@ def check_if_buzz_at_eobon():
         dead=True
         answerline['state']='disabled'
         enterans['state']='disabled'
+        root.unbind("<Return>")
         aread=bonlist[bonnum][:subbonnum]
         allread=''
         for n,i in enumerate(aread):
