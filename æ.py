@@ -40,8 +40,8 @@ qcanvas=None
 qtext=None
 is_this_correct=None
 tbrn=0
-tulist=["""A leader of the fief of Kii who led the country during this period introduced sweet potato and sugarcane cultivation and began the compilation of the Kansei law code. Scholarly endeavors in this era were divided into the schools of Ancient Learning, National Learning, and Dutch Learning. This era included the artistic flourishing of the "original happiness period." Another ruler's attempt to stamp out Christianity during this era led to the (*)) Shimabara Rebellion. During the disintegration of its namesake government, this period saw the establishment of the Ezo Republic and the Boshin War. Ended by the proclamation of the Charter Oath and rallying behind Emperor Meiji, for 10 points, identify this final Japanese shogunate which lasted from 1600 to 1858.""", """Two wolves named "Greedy" and "Ravenous" devour the food that this deity doesn't eat. This deity can see far from his throne of Hlidskjalf, and has information brought to him by the ravens Huginn and Muninn. This deity hung on his spear Gungnir from the World Tree Yggdrasil in order to master the runes, and he gave up one of his eyes to drink from Mimir's well. He rides the eight-legged steed Sleipnir and will be swallowed whole by Fenrir at Ragnarok. For 10 points, name this owner of Valhalla, the chief god of the Norse pantheon.""","""A son of Zeus and Electra became one of the founders of this city after fleeing Samothrace whenZeus killed his brother Iasion. This city's territory was at one point divided between the brothers Ilusand Assaracus. A deceptive king of this city offered his daughter Hesione to a sea monster sent byPoseidon, who was angry because that king failed to (*) pay Poseidon and Apollo for building this city'swalls. Heracles sacked this city when he did not receive his promised immortal horses from Laomedon,who received those horses from Zeus as compensation for the rape of his brother, Ganymede. For 10points, name this Anatolian city ruled by Priam during a ten-year war with the Greeks."""]
-tualist=["Tokugawa Shogunate","Odin","Troy [or Troia; or Ilium; or Ilion]"]
+tulist=["In this country in September 2015, a camerawoman tripped migrants fleeing from a refugee camp in Roszke. In 2015, Viktor Orban, this country's Prime Minister, ordered fences on its borders with Serbia and Croatia to stop (*) Syrian refugees from entering this country. For ten points, name this European country that, as critics ironically note, is seeking guest workers to work in Budapest.","In 2005, this country's leader promised free heating oil for poor Americans; that support was provided through Citgo, the American arm of this country's national oil company. This country's current president is Nicolas Ma ́duro, who succeeded a man who controlled (*) South America's largest oil reserves. For ten points, name this country formerly led by Hugo Cha ́vez and a corrupt government in Caracas.","After this event, critics complained that no \"official notice\" was given that Article 50 would be invoked. In this event's aftermath, Theresa May replaced David Cameron as (*) Prime Minister. Stock markets plunged after news broke of, for ten points, what June 2016 public referendum that decided to end a namesake country's participation in the European Union?","A colorfully-named part of this organization circumnavigated the world in order to spread goodwill in the early 20th century. Theodore Roosevelt was the assistant secretary of this organization during war, a position he resigned to fight on the front lines. During the Spanish- American War a leader in this organization, (*) George Dewey won the battle of Manila Bay. For 10 points, name this organization which defends the coast and oversea holdings of a certain North American nation."]
+tualist=["Hungary","Bolivarian Republic of Venezuela (accept Repu ́blica Bolivariana de Venezuela)","Brexit (accept descriptions of the United Kingdom's June 2016 referendum to leave the European Union; accept equivalents, like Britain's vote to leave the EU; prompt on partial answers)","United States Navy(Accept obvious equivalents; Prompt on Navy)"]
 bonlist=[["""In 2013, this man was succeeded as Director of the FBI by James Comey, before being appointed to his current post by Deputy Attorney General Rod Rosenstein. For 10 points each:\nName this Republican Special Counsel for the Department of Justice, who is currently overseeing an investigation into Russian interference in the 2016 US Presidential Election.""", """This former Trump campaign advisor entered a plea deal with Mueller, which resulted in additional charges for him and Paul Manafort, such as conspiracy against the United States from when they lobbied for Ukraine.""","""Gates and Manafort were lobbyists for this pro-Russian Ukrainian Party. Former President Viktor Yanukovych was the first member of this party to be elected president before leaving office in 2014."""],["""In this text, a woman is impregnated by eating a lingonberry and gives birth to a son who becomes King of Karelia. For 10 points each:\nName this epic which contains the story of the virgin Marjatta. In another story from this epic, a comb begins to bleed after its hero drowns trying to capture a swan to win Louhi's daughter's hand in marriage.""","""The story of Marjatta symbolizes the Christianization of this European country, which reveres Ilmarinen and Väinämöinen as mythological heroes and regards the Kalevala as its national epic.""","""In Finland, the word for Satan, “saatana,” is frequently used as a swear word in conjunction with a word thought to refer to this chief Finnish god. This god of the sky conjured lightning from a hammer, axe or sword."""]]
 bonalist=[["""Robert Mueller""", """Rick Gates""","""Party of Regions"""],["""Kalevala""","""Finland""","""Ukko"""]]
 
@@ -173,7 +173,7 @@ def setup():
     abt=tk.Button(fram4,text = 'About')
     CreateToolTip(abt, text = "Hello, I'm GlutenFreeGrapes. I created this program in January 2022 \nas an all-in-one self-study tool. \n\n★★★★★Why this?★★★★★\nI made this because every quizbowl studying tool out there was either \na tossup reader or a bonus reader, but never both. So, I decided to try \nand make one myself. \n\n★★★★★Credits★★★★★\nThis was inspired by Kevin Kwok's Protobowl, Karan Gurazada's QuizBug, \nand Pratyush Jaishanker's pkbot. \nThis program uses QuizDB, which was developed by Raynor Kuang.\n\n★★★★★Contact★★★★★\nMy Github is @GlutenFreeGrapes. \nMy hsquizbowl forums username is GlutenFreeGrapes. ")
     contr=tk.Button(fram4,text = 'How to Play')
-    CreateToolTip(contr, text = """Controls:\n[n] → [Next/Skip]\n[Space] → [Buzz]\n[Enter] → [Enter]\n[Escape] → [Quit]\n\nWhen the question starts, you will be able to live-adjust the time interval between words. \nDuring bonuses, the buzzer button should be disabled to prevent accidental buzzing during \nthem. You should be able to see your stats at the top of the window. """)
+    CreateToolTip(contr, text = """Controls:\n] → [Next/Skip]\nSpace → [Buzz]\nEnter → [Enter]\nEscape → [Quit]\n\nWhen the question starts, you will be able to live-adjust the time interval between words. \nDuring bonuses, the buzzer button should be disabled to prevent accidental buzzing during \nthem. You should be able to see your stats at the top of the window. """)
     sumbit=tk.Button(fram4,text = 'Go', command = submit)
     quibt=tk.Button(fram4,text = 'Quit', command = quit)
     root.bind('<Return>',lambda event:submit())
@@ -228,7 +228,7 @@ def qscreen(tuorbon,timeint):
         buzzer['state']='disabled'
         root.unbind("<space>")
         read['state']='disabled'
-        root.unbind('n')
+        root.unbind('<]>')
         if endctr:
             qframe.after_cancel(endctr)
         answerline.focus_set()
@@ -285,7 +285,7 @@ def qscreen(tuorbon,timeint):
                     enterans['state']='disabled'
                     root.unbind("<Return>")
                     read['state']='normal'
-                    root.bind('n', lambda event: readq())
+                    root.bind('<]>', lambda event: readq())
                     reading=False
                     tuct['text']='Tossups: %s'%(tu)
                     tossuppts['text']='Tossup Points: %s'%(tupts)
@@ -314,7 +314,7 @@ def qscreen(tuorbon,timeint):
                     allread+="\n\n"+bonalist[bonnum][n]+"\n\n"
                 qcanvas.itemconfigure(qtext,text=allread+bonlist[bonnum][subbonnum]+"\n\n"+bonalist[bonnum][subbonnum])
                 read['state']='normal'
-                root.bind('n', lambda event: readq())
+                root.bind('<]>', lambda event: readq())
                 if subbonnum==2:
                     bon+=1
                     bpts+=curbpts
@@ -361,7 +361,7 @@ def qscreen(tuorbon,timeint):
                 if tunum>=len(tulist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                     read['state']='disabled'
-                    root.unbind('n')
+                    root.unbind('<]>')
                     thyme['state']='disabled'
                     buzzer['state']='disabled'
                     root.unbind("<space>")
@@ -379,7 +379,7 @@ def qscreen(tuorbon,timeint):
                 if bonnum>=len(bonlist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                     read['state']='disabled'
-                    root.unbind('n')
+                    root.unbind('<]>')
                     thyme['state']='disabled'
                     buzzer['state']='disabled'
                     root.unbind("<space>")
@@ -401,7 +401,7 @@ def qscreen(tuorbon,timeint):
                     if tunum>=len(tulist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                         read['state']='disabled'
-                        root.unbind('n')
+                        root.unbind('<]>')
                         thyme['state']='disabled'
                         buzzer['state']='disabled'
                         root.unbind("<space>")
@@ -438,7 +438,7 @@ def qscreen(tuorbon,timeint):
                 if tunum>=len(tulist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                     read['state']='disabled'
-                    root.unbind('n')
+                    root.unbind('<]>')
                     thyme['state']='disabled'
                     buzzer['state']='disabled'
                     root.unbind("<space>")
@@ -454,7 +454,7 @@ def qscreen(tuorbon,timeint):
                 if bonnum>=len(bonlist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                     read['state']='disabled'
-                    root.unbind('n')
+                    root.unbind('<]>')
                     thyme['state']='disabled'
                     buzzer['state']='disabled'
                     root.unbind("<space>")
@@ -470,7 +470,7 @@ def qscreen(tuorbon,timeint):
                     if tunum>=len(tulist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                         read['state']='disabled'
-                        root.unbind('n')
+                        root.unbind('<]>')
                         thyme['state']='disabled'
                         buzzer['state']='disabled'
                         root.unbind("<space>")
@@ -486,7 +486,7 @@ def qscreen(tuorbon,timeint):
                     if bonnum>=len(bonlist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Quit] to exit")
                         read['state']='disabled'
-                        root.unbind('n')
+                        root.unbind('<]>')
                         thyme['state']='disabled'
                         buzzer['state']='disabled'
                         root.unbind("<space>")
@@ -497,7 +497,7 @@ def qscreen(tuorbon,timeint):
                     answerline.focus_set()
                     read_bonus(qframe,qcanvas,qtext,thyme)
     read=tk.Button(controlframe,text="Next/Skip",command=readq)
-    root.bind('n', lambda event: readq())
+    root.bind('<]>', lambda event: readq())
     read.grid(row=0,column=0)
     if tuorbon==0:
         tuct.grid(row=0,column=0)
@@ -525,11 +525,13 @@ def qscreen(tuorbon,timeint):
     root.focus_force()
     root.mainloop()
 def close_enough(str1,str2):
-    dna=str2.find("[")
+    dna=str2.find("(")
     if dna<0:
-        dna=str2.find("do not accept")
+        dna=str2.find("[")
         if dna<0:
-            dna=str2.find('<')
+            dna=str2.find("do not accept")
+            if dna<0:
+                dna=str2.find('<')
     if dna<0:
         if enchant.utils.levenshtein(str1,str2)<len(str2)/2:
             return True

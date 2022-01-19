@@ -4,18 +4,18 @@ This program of mine will join the ever-growing list of quizbowl question reader
 More specifically, I plan to use the QuizDB database in order to access questions, then use simple Python GUI functions in order to have the program display the words one at a time. I plan on giving the tossups the same functionality as in protobowl and likewise with bonuses and pkbot, except for the fact that pkbot has a helpful function where even if the program may not initially detect your answer as being correct you can still say that you did in fact get it right, so I plan on giving the tossups this functionality alongside typo correction/spellcheck. 
 ## Keybinds
 ### Select Questions Window
-[Enter] → [Go]
+`Enter` → [Go]
 
-[Esc] → [Quit]
+`Esc` → [Quit]
 
 ### Question Window
-[n] → [Next/Skip]
+`]` → [Next/Skip]
 
-[Space] → [Buzz]
+`Space` → [Buzz]
 
-[Enter] → [Enter]
+`Enter` → [Enter]
 
-[Esc] → [Quit]
+`Esc` → [Quit]
 
 ## How to use
 When the program is run, you will be prompted with a screen asking for inputs on what categories you want, difficulties, etc. Use the dropdown menus to select your options. There are also options for changing the time interval between words and whether you want tossups only, bonuses only, or tossups and bonuses. 
