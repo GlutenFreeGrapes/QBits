@@ -3,12 +3,12 @@ from tkinter import messagebox
 ccccc=["Current Events", "Fine Arts", "Geography", "History", "Literature", "Mythology", "Philosophy", "Religion", "Science", "Social Science", "Trash"]
 sssssccccc={"Current Events Subcategories":["American Current Events", "Other Current Events"], "Fine Arts Subcategories":["American Fine Arts", "Audiovisual Fine Arts", "Auditory Fine Arts", "British Fine Arts", "European Fine Arts", "Opera", "Visual Fine Arts", "World Fine Arts", "Other Fine Arts"], "Geography Subcategories":["American Geography", "World Geography"], "History Subcategories":["American History", "British History", "Classical History", "European History", "World History", "Other History"], "Literature Subcategories":["American Literature", "British Literature", "Classical Literature", "European Literature", "World Literature", "Other Literature"], "Mythology Subcategories":["American Mythology", "Chinese Mythology", "Egyptian Mythology", "Greco-Roman Mythology", "Indian Mythology", "Japanese Mythology", "Norse Mythology", "Other East Asian Mythology", "Other Mythology"], "Philosophy Subcategories":["American Philosophy", "Classical Philosophy", "East Asian Philosophy", "European Philosophy", "Other Philosophy"], "Religion Subcategories":["American Religion", "Christianity", "East Asian Religion", "Islam", "Judaism", "Other Religion"], "Science Subcategories":["American Science", "Biology", "Chemistry", "Computer Science", "Math", "Physics", "World Science", "Other Science"], "Social Science Subcategories":["American Social Science", "Anthropology", "Economics", "Linguistics", "Political Science", "Psychology", "Sociology", "Other Social Science"], "Trash Subcategories":["American Trash", "Movies", "Music", "Sports", "Television", "Video Games", "Other Trash"]}
 ddddd=list(range(1,10))
+tttttooooouuuuurrrrr,tourids=dict(),dict()
 cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,root,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,timeoutctr,endctr,qctr=None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
 buzzed,reading,dead,ansalrgiven,qskipped=False,False,False,False,False
 ptn,bagels=[0,0,0],[0,0,0,0]
 tu,bon,tupts,bpts,tunum,bonnum,subbonnum,pm,curwd,curbpts,tbrn=0,0,0,0,-1,-1,0,0,0,0,0
 tulist,tualist,tufalist,bonlist,bonalist,bonfalist=[],[],[],[],[],[]
-
 class ToolTip(object):
     def __init__(self, widget):
         self.widget = widget
@@ -40,11 +40,25 @@ def CreateToolTip(widget, text):
         toolTip.hidetip()
     widget.bind('<Enter>', enter)
     widget.bind('<Leave>', leave)
+def settourlist():
+    global tourids,tttttooooouuuuurrrrr
+    with open('quizdb-20220122021550.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    for i in ddddd:
+        tttttooooouuuuurrrrr["Difficulty Level %s"%i]=set()
+    for j in data["data"]["tossups"],data["data"]["bonuses"]:
+        for i in j:
+            if i["tournament_id"]:
+                if i["tournament"]["name"] not in tourids:
+                    tourids[i["tournament"]["name"]]=i["tournament_id"]
+                if i["tournament"]["difficulty_num"] in tttttooooouuuuurrrrr:
+                    tttttooooouuuuurrrrr["Difficulty Level %s"%i["tournament"]["difficulty_num"]].add(i["tournament"]["name"])
+                else:
+                    tttttooooouuuuurrrrr["Difficulty Level %s"%i["tournament"]["difficulty_num"]]={i["tournament"]["name"]}
 def handback(c,sc,d,tour,tb,tint):
     global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee
     cc,sscc,dd,ttoouurr,ttbb,tthhyymmee=c,sc,d,tour,tb,tint
     return
-
 def setup():
     root=tk.Tk()
     root.geometry("+20+20")
@@ -80,26 +94,35 @@ def setup():
     for i in ddddd:
         difft.menu.add_checkbutton(label=i,variable=diffs[int(i)-1])
     ldiffs=tk.Button(fram1, text='❔')
-    tours=tk.StringVar()
+    alltourlist=[]
+    for i in tttttooooouuuuurrrrr:
+        alltourlist.extend(tttttooooouuuuurrrrr[i])
+    tours=[tk.IntVar() for i in range(len(alltourlist))]
     tourl=tk.Label(fram1, text = 'Tournaments: ', font=('calibri',10, 'bold'))
-    tourt=tk.Entry(fram1,textvariable = tours, font=('calibri',10,'normal'), width=50)
+    tourt=tk.Menubutton (fram1, text="See options", relief=tk.RAISED)
+    tourt.menu =  tk.Menu (tourt, tearoff = 0 )
+    tourt["menu"] = tourt.menu
+    for n,i in enumerate(sorted(tttttooooouuuuurrrrr.keys())):
+        tourt.menu.add_command(label=i,state='disabled')
+        for j in tttttooooouuuuurrrrr[i]:
+            tourt.menu.add_checkbutton(label=j,variable=tours[alltourlist.index(j)])
     ltours=tk.Button(fram1, text='❔')
     catl.grid(row=0,column=0, sticky="e")
     catt.grid(row=0,column=1)
     lcats.grid(row=0,column=2, sticky="w")
-    CreateToolTip(lcats, text = 'Pick whatever categories you want via the dropdown menu. Leave blank for all. \nList of categories: \n★ Current Events\n★ Fine Arts\n★ Geography\n★ History\n★ Literature\n★ Mythology\n★ Philosophy\n★ Religion\n★ Science\n★ Social Science\n★ Trash\n\nEx. \n"Current Events" → only gives questions from current events\n"History, Mythology, Science" → gives questions from history, mythology, and science')
+    CreateToolTip(lcats, text = 'Pick whatever categories you want via the dropdown menu. Leave blank for all. \nList of categories: \n★ Current Events\n★ Fine Arts\n★ Geography\n★ History\n★ Literature\n★ Mythology\n★ Philosophy\n★ Religion\n★ Science\n★ Social Science\n★ Trash\n\nEx. \n"Current Events" → only gives questions from current events\n"History, Mythology, Science" → gives questions from history, mythology, and science\n"Geography", "Video Games" in subcategories → any questions on geography, \nalong with video game questions')
     subcatl.grid(row=1,column=0, sticky="e")
     subcatt.grid(row=1,column=1)
     lsubcats.grid(row=1,column=2, sticky="w")
-    CreateToolTip(lsubcats, text = 'Pick whatever categories you want via the dropdown menu. Leave blank for all. \nList of subcategories: \n\n★ Current Events Subcategories: American Current Events, Other Current Events\n★ Fine Arts Subcategories: American Fine Arts, Audiovisual Fine Arts, \nAuditory Fine Arts, British Fine Arts, European Fine Arts, Opera, Visual Fine Arts, \nWorld Fine Arts, Other Fine Arts\n★ Geography Subcategories: American Geography, World Geography\n★ History Subcategories: American History, British History, European History, \nClassical History, World History, Other History\n★ Literature Subcategories: American Literature, British Literature, \nEuropean Literature, Classical Literature, World Literature, Other Literature\n★ Mythology Subcategories: American Mythology, Chinese Mythology, Egyptian Mythology, \nGreco-Roman Mythology, Indian Mythology, Japanese Mythology, Norse Mythology, \nOther East Asian Mythology, Other Mythology\n★ Philosophy Subcategories: American Philosophy, Classical Philosophy, \nEast Asian Philosophy, European Philosophy, Other Philosophy\n★ Religion Subcategories: American Religion, Christianity, East Asian Religion, \nIslam, Judaism, Other Religion\n★ Science Subcategories: American Science, Biology, Chemistry, Computer Science, \nMath, Physics, World Science, Other Science\n★ Social Science Subcategories: American Social Science, Anthropology, Economics, \nLinguistics, Political Science, Psychology, Sociology, Other Social Science\n★ Trash Subcategories: American Trash, Movies, Music, Sports, Television, \nVideo Games, Other Trash\n\nEx. \n"Greco-Roman Mythology, Computer Science" → only gives greco-roman mythology and \ncomputer science questions')
+    CreateToolTip(lsubcats, text = 'Pick whatever categories you want via the dropdown menu. Leave blank for all. \nList of subcategories: \n\n★ Current Events Subcategories: American Current Events, Other Current Events\n★ Fine Arts Subcategories: American Fine Arts, Audiovisual Fine Arts, \nAuditory Fine Arts, British Fine Arts, European Fine Arts, Opera, Visual Fine Arts, \nWorld Fine Arts, Other Fine Arts\n★ Geography Subcategories: American Geography, World Geography\n★ History Subcategories: American History, British History, European History, \nClassical History, World History, Other History\n★ Literature Subcategories: American Literature, British Literature, \nEuropean Literature, Classical Literature, World Literature, Other Literature\n★ Mythology Subcategories: American Mythology, Chinese Mythology, Egyptian Mythology, \nGreco-Roman Mythology, Indian Mythology, Japanese Mythology, Norse Mythology, \nOther East Asian Mythology, Other Mythology\n★ Philosophy Subcategories: American Philosophy, Classical Philosophy, \nEast Asian Philosophy, European Philosophy, Other Philosophy\n★ Religion Subcategories: American Religion, Christianity, East Asian Religion, \nIslam, Judaism, Other Religion\n★ Science Subcategories: American Science, Biology, Chemistry, Computer Science, \nMath, Physics, World Science, Other Science\n★ Social Science Subcategories: American Social Science, Anthropology, Economics, \nLinguistics, Political Science, Psychology, Sociology, Other Social Science\n★ Trash Subcategories: American Trash, Movies, Music, Sports, Television, \nVideo Games, Other Trash\n\nEx. \n"Greco-Roman Mythology, Computer Science" → only gives greco-roman mythology and \ncomputer science questions\n"Physics", "Literature" in categories → any questions on physics, along with literature\n questions')
     diffl.grid(row=2,column=0, sticky="e")
     difft.grid(row=2,column=1)
     ldiffs.grid(row=2,column=2, sticky="w")
-    CreateToolTip(ldiffs, text = 'Pick whatever question difficulty levels you want, separated by commas. Leave blank for all. \nBelow is a list of all the difficulty level numbers and the difficulties they correspond to: \n1 → Middle School\n2 → Easy High School\n3 → Regular High School\n4 → Hard High School\n5 → National High School\n6 → Easy College\n7 → Regular College\n8 → Hard College\n9 → Open\n\nEx. \n"6" → questions with easy college difficulty\n"4,5,6,7" → questions with difficulty ranging from hard high school to regular college')
+    CreateToolTip(ldiffs, text = 'Pick whatever question difficulty levels you want, separated by commas. Leave blank for all. \nBelow is a list of all the difficulty level numbers and the difficulties they correspond to: \n1 → Middle School\n2 → Easy High School\n3 → Regular High School\n4 → Hard High School\n5 → National High School\n6 → Easy College\n7 → Regular College\n8 → Hard College\n9 → Open\n\nEx. \n"6" → questions with easy college difficulty\n"4,5,6,7" → questions with difficulty ranging from hard high school to regular college\n"6", "2020 Oxford Online" in tournaments → any questions in difficulty level 6\n along with questions from 2020 Oxford Online packet')
     tourl.grid(row=3,column=0, sticky="e")
-    tourt.grid(row=3,column=1, sticky="w")
+    tourt.grid(row=3,column=1)
     ltours.grid(row=3,column=2, sticky="w")
-    CreateToolTip(ltours, text = 'Pick whatever tournaments you want, separated by commas. Leave blank for all. \nYou may enter either simply years or simply packet names. \n\nEx. \n"2020 pace" → 2020 PACE NSC packet\n"2020" → tournaments from 2020\n"pace" → all packets from PACE NSC tournaments')
+    CreateToolTip(ltours, text = 'Pick whatever categories you want via the dropdown menu. Leave blank for all. \n\nEx. \n"2020 CALISTO" → 2020 CALISTO packet, along with whatever \ndifficulty levels you have selected\n"2020 CALISTO, 2020 Terrapin", selected "6" in difficulty level → 2020 CALISTO and \n2020 Terrapin, along with any questions with diffuculty level 6')
     fram2=tk.Frame(root)
     fram2.grid(row=1,column=0)
     timeo=tk.Label(fram2, text = 'Time between each word (ms): ', font=('calibri',10, 'bold'))
@@ -124,20 +147,19 @@ def setup():
             c=ccccc
         sc=[allsubcatlist[i] for i in range(len(allsubcatlist)) if subcats[i].get()>0]
         d=[ddddd[i] for i in range(len(ddddd)) if diffs[i].get()>0]
-        if d==[]:
+        t=[alltourlist[i] for i in range(len(alltourlist)) if tours[i].get()>0]
+        if d==[] and t==[]:
             d=ddddd
-        t=tours.get().strip().split(',')
         tb=tubon.get()
-        tour=[i.strip().lower().replace(' ','') for i in t if i.strip()!='']
         tint=thyme.get()
-        handback(c,sc,d,tour,tb,tint)
+        handback(c,sc,d,t,tb,tint)
         root.destroy()
     fram4=tk.Frame(root)
     fram4.grid(row=3,column=0)
     abt=tk.Button(fram4,text = 'About')
     CreateToolTip(abt, text = "Hello, I'm GlutenFreeGrapes. I created this program in January 2022 \nas an all-in-one self-study tool. \n\n★★★★★Why this?★★★★★\nI made this because every quizbowl studying tool out there was either \na tossup reader or a bonus reader, but never both. So, I decided to try \nand make one myself. \n\n★★★★★Credits★★★★★\nThis was inspired by Kevin Kwok's Protobowl, Karan Gurazada's QuizBug, \nand Pratyush Jaishanker's pkbot. \nThis program uses QuizDB, which was developed by Raynor Kuang.\n\n★★★★★Contact★★★★★\nMy Github is @GlutenFreeGrapes. \nMy hsquizbowl forums username is GlutenFreeGrapes. ")
-    contr=tk.Button(fram4,text = 'How to Play')
-    CreateToolTip(contr, text = """Controls:\n] → [Next/Skip]\nSpace → [Buzz]\nEnter → [Enter]\nEscape → [Quit]\n\nWhen the question starts, you will be able to live-adjust the time interval between words. \nDuring bonuses, the buzzer button should be disabled to prevent accidental buzzing during \nthem. You should be able to see your stats at the top of the window. """)
+    contr=tk.Button(fram4,text = 'Controls')
+    CreateToolTip(contr, text = """Keybinds:\n] → [Next/Skip]\nSpace → [Buzz]\nEnter → [Enter]\nEscape → [Quit]\n\nWhen the question starts, you will be able to live-adjust the time interval between words. \nDuring bonuses, the buzzer button should be disabled to prevent accidental buzzing during \nthem. You should be able to see your stats at the top of the window. """)
     sumbit=tk.Button(fram4,text = 'Go', command = submit)
     quibt=tk.Button(fram4,text = 'Quit', command = quit)
     root.bind('<Return>',lambda event:submit())
@@ -216,7 +238,7 @@ def qscreen(tuorbon,timeint):
                 fans=tufalist[tunum]
                 actualans=tualist[tunum]
                 if buzzed:
-                    if close_enough(givenans.lower(),fans):
+                    if close_enough(givenans.lower(),fans,actualans):
                         if curwd<=pm:
                             tupts+=15
                             ptn[0]+=1
@@ -264,7 +286,7 @@ def qscreen(tuorbon,timeint):
                 root.unbind("<Return>")
                 fans=bonfalist[bonnum][subbonnum]
                 actualans=bonalist[bonnum][subbonnum]
-                if close_enough(givenans.lower(),fans):
+                if close_enough(givenans.lower(),fans,actualans):
                     curbpts+=10
                 else:
                     if prompt(givenans,actualans):
@@ -489,9 +511,9 @@ def qscreen(tuorbon,timeint):
     root.bind('<Escape>',lambda event:quit())
     root.focus_force()
     root.mainloop()
-def close_enough(str1,str2):
+def close_enough(given,htmlans,normalans):
     accepans=set()
-    s=bs4.BeautifulSoup(str2, features="html.parser")
+    s=bs4.BeautifulSoup(htmlans, features="html.parser")
     strongs=s.find_all("strong")
     for i in strongs:
         accepans.add(i.string.lower())
@@ -499,21 +521,19 @@ def close_enough(str1,str2):
     for i in bs:
         accepans.add(i.string.lower())
     for i in accepans:
-        if enchant.utils.levenshtein(str1,i)<min(3,len(i)//2):
+        if enchant.utils.levenshtein(given,i)<min(3,len(i)//2):
             return True
-    dna=str2.find("(")
+    dna=normalans.find("[")
     if dna<0:
-        dna=str2.find("[")
+        dna=normalans.find("(")
         if dna<0:
-            dna=str2.find("do not accept")
-            if dna<0:
-                dna=str2.find('<')
+            dna=normalans.find("do not accept")
     if dna<0:
-        if enchant.utils.levenshtein(str1,str2)<min(3,len(str2)//2):
+        if enchant.utils.levenshtein(given,normalans)<min(3,len(normalans)//2):
             return True
     else:
-        s=str2[:dna]
-        if enchant.utils.levenshtein(s,str1)<min(3,len(str2)//2):
+        s=normalans[:dna]
+        if enchant.utils.levenshtein(s,given)<min(3,len(normalans)//2):
             return True
     return False
 def check_if_buzz_at_eotu():
@@ -597,8 +617,6 @@ def iterbon(allread, words, i, window,canvas,question_txt,timeint):
         canvas.itemconfigure(question_txt, text=allread+' '.join(words[:i]))
         i += 1
         qctr = window.after(timeint.get(), lambda: iterbon(allread,words, i,window,canvas,question_txt,timeint))
-
-
 def fetchqs(cats,subcats,diffs,tours,tuorbon):
     global tulist,tualist,tufalist,bonlist,bonalist,bonfalist
     catids={"Current Events":26, "Fine Arts":21, "Geography":20, "History":18, "Literature":15, "Mythology":14, "Philosophy":25, "Religion":19, "Science":17, "Social Science":22, "Trash":16}
@@ -606,12 +624,13 @@ def fetchqs(cats,subcats,diffs,tours,tuorbon):
     clist=set()
     sclist=set()
     dlist=set(diffs)
-    tlist=set(tours)
+    tlist=set()
     for i in cats:
         clist.add(catids[i])
     for i in subcats:
         sclist.add(subcatids[i])
-    print(clist,sclist,dlist,tlist)
+    for i in tours:
+        tlist.add(tourids[i])
     with open('quizdb-20220122021550.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
     if tuorbon==0 or tuorbon==2:
@@ -649,16 +668,12 @@ def fetchqs(cats,subcats,diffs,tours,tuorbon):
             bons=list(zip(bonlist,bonfalist,bonalist))
             random.shuffle(bons)
             bonlist,bonfalist,bonalist=zip(*bons)
-
-
-
+settourlist()
 setup()
 if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
-    print(cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)
     if ttbb<2:
         tbrn=ttbb
     else:
         tbrn=0
     fetchqs(cc,sscc,dd,ttoouurr,ttbb)
     qscreen(ttbb,tthhyymmee)
-#turn tournaments option into a dropdown
