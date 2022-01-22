@@ -1,49 +1,13 @@
-import tkinter as tk,enchant
+import tkinter as tk,enchant,random,json,bs4
 from tkinter import messagebox
 ccccc=["Current Events", "Fine Arts", "Geography", "History", "Literature", "Mythology", "Philosophy", "Religion", "Science", "Social Science", "Trash"]
-sssssccccc={"Current Events Subcategories":["American Current Events", "Other Current Events"], "Fine Arts Subcategories":["American Fine Arts", "Audiovisual Fine Arts", "Auditory Fine Arts", "British Fine Arts", "European Fine Arts", "Opera", "Visual Fine Arts", "World Fine Arts", "Other Fine Arts"], "Geography Subcategories":["American Geography", "World Geography"], "History Subcategories":["American History", "British History", "European History", "Classical History", "World History", "Other History"], "Literature Subcategories":["American Literature", "British Literature", "European Literature", "Classical Literature", "World Literature", "Other Literature"], "Mythology Subcategories":["American Mythology", "Chinese Mythology", "Egyptian Mythology", "Greco-Roman Mythology", "Indian Mythology", "Japanese Mythology", "Norse Mythology", "Other East Asian Mythology", "Other Mythology"], "Philosophy Subcategories":["American Philosophy", "Classical Philosophy", "East Asian Philosophy", "European Philosophy", "Other Philosophy"], "Religion Subcategories":["American Religion", "Christianity", "East Asian Religion", "Islam", "Judaism", "Other Religion"], "Science Subcategories":["American Science", "Biology", "Chemistry", "Computer Science", "Math", "Physics", "World Science", "Other Science"], "Social Science Subcategories":["American Social Science", "Anthropology", "Economics", "Linguistics", "Political Science", "Psychology", "Sociology", "Other Social Science"], "Trash Subcategories":["American Trash", "Movies", "Music", "Sports", "Television", "Video Games", "Other Trash"]}
-ddddd=[str(i) for i in range(1,10)]
-cc,sscc,dd,ttoouurr,ttbb,tthhyymmee=None,None,None,None,None,None
-buzzed=False
-reading=False
-dead=False
-ansalrgiven=False
-qskipped=False
-timeoutctr=None
-endctr=None
-qctr=None
-tu=0
-bon=0
-ptn=[0,0,0]
-bagels=[0,0,0,0]
-tupts=0
-bpts=0
-tunum=-1
-bonnum=-1
-subbonnum=0
-pm=0
-curwd=0
-tuct=None
-tossuppts=None
-ppg=None
-ptnct=None
-bonct=None
-bonuspts=None
-ppb=None
-tttb=None
-root=None
-buzzer=None
-curbpts=0
-enterans=None
-answerline=None
-qcanvas=None
-qtext=None
-is_this_correct=None
-tbrn=0
-tulist=["In this country in September 2015, a camerawoman tripped migrants fleeing from a refugee camp in Roszke. In 2015, Viktor Orban, this country's Prime Minister, ordered fences on its borders with Serbia and Croatia to stop (*) Syrian refugees from entering this country. For ten points, name this European country that, as critics ironically note, is seeking guest workers to work in Budapest.","In 2005, this country's leader promised free heating oil for poor Americans; that support was provided through Citgo, the American arm of this country's national oil company. This country's current president is Nicolas Ma ́duro, who succeeded a man who controlled (*) South America's largest oil reserves. For ten points, name this country formerly led by Hugo Cha ́vez and a corrupt government in Caracas.","After this event, critics complained that no \"official notice\" was given that Article 50 would be invoked. In this event's aftermath, Theresa May replaced David Cameron as (*) Prime Minister. Stock markets plunged after news broke of, for ten points, what June 2016 public referendum that decided to end a namesake country's participation in the European Union?","A colorfully-named part of this organization circumnavigated the world in order to spread goodwill in the early 20th century. Theodore Roosevelt was the assistant secretary of this organization during war, a position he resigned to fight on the front lines. During the Spanish- American War a leader in this organization, (*) George Dewey won the battle of Manila Bay. For 10 points, name this organization which defends the coast and oversea holdings of a certain North American nation."]
-tualist=["Hungary","Bolivarian Republic of Venezuela (accept Repu ́blica Bolivariana de Venezuela)","Brexit (accept descriptions of the United Kingdom's June 2016 referendum to leave the European Union; accept equivalents, like Britain's vote to leave the EU; prompt on partial answers)","United States Navy(Accept obvious equivalents; Prompt on Navy)"]
-bonlist=[["""In 2013, this man was succeeded as Director of the FBI by James Comey, before being appointed to his current post by Deputy Attorney General Rod Rosenstein. For 10 points each:\nName this Republican Special Counsel for the Department of Justice, who is currently overseeing an investigation into Russian interference in the 2016 US Presidential Election.""", """This former Trump campaign advisor entered a plea deal with Mueller, which resulted in additional charges for him and Paul Manafort, such as conspiracy against the United States from when they lobbied for Ukraine.""","""Gates and Manafort were lobbyists for this pro-Russian Ukrainian Party. Former President Viktor Yanukovych was the first member of this party to be elected president before leaving office in 2014."""],["""In this text, a woman is impregnated by eating a lingonberry and gives birth to a son who becomes King of Karelia. For 10 points each:\nName this epic which contains the story of the virgin Marjatta. In another story from this epic, a comb begins to bleed after its hero drowns trying to capture a swan to win Louhi's daughter's hand in marriage.""","""The story of Marjatta symbolizes the Christianization of this European country, which reveres Ilmarinen and Väinämöinen as mythological heroes and regards the Kalevala as its national epic.""","""In Finland, the word for Satan, “saatana,” is frequently used as a swear word in conjunction with a word thought to refer to this chief Finnish god. This god of the sky conjured lightning from a hammer, axe or sword."""]]
-bonalist=[["""Robert Mueller""", """Rick Gates""","""Party of Regions"""],["""Kalevala""","""Finland""","""Ukko"""]]
+sssssccccc={"Current Events Subcategories":["American Current Events", "Other Current Events"], "Fine Arts Subcategories":["American Fine Arts", "Audiovisual Fine Arts", "Auditory Fine Arts", "British Fine Arts", "European Fine Arts", "Opera", "Visual Fine Arts", "World Fine Arts", "Other Fine Arts"], "Geography Subcategories":["American Geography", "World Geography"], "History Subcategories":["American History", "British History", "Classical History", "European History", "World History", "Other History"], "Literature Subcategories":["American Literature", "British Literature", "Classical Literature", "European Literature", "World Literature", "Other Literature"], "Mythology Subcategories":["American Mythology", "Chinese Mythology", "Egyptian Mythology", "Greco-Roman Mythology", "Indian Mythology", "Japanese Mythology", "Norse Mythology", "Other East Asian Mythology", "Other Mythology"], "Philosophy Subcategories":["American Philosophy", "Classical Philosophy", "East Asian Philosophy", "European Philosophy", "Other Philosophy"], "Religion Subcategories":["American Religion", "Christianity", "East Asian Religion", "Islam", "Judaism", "Other Religion"], "Science Subcategories":["American Science", "Biology", "Chemistry", "Computer Science", "Math", "Physics", "World Science", "Other Science"], "Social Science Subcategories":["American Social Science", "Anthropology", "Economics", "Linguistics", "Political Science", "Psychology", "Sociology", "Other Social Science"], "Trash Subcategories":["American Trash", "Movies", "Music", "Sports", "Television", "Video Games", "Other Trash"]}
+ddddd=list(range(1,10))
+cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,root,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,timeoutctr,endctr,qctr=None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
+buzzed,reading,dead,ansalrgiven,qskipped=False,False,False,False,False
+ptn,bagels=[0,0,0],[0,0,0,0]
+tu,bon,tupts,bpts,tunum,bonnum,subbonnum,pm,curwd,curbpts,tbrn=0,0,0,0,-1,-1,0,0,0,0,0
+tulist,tualist,tufalist,bonlist,bonalist,bonfalist=[],[],[],[],[],[]
 
 class ToolTip(object):
     def __init__(self, widget):
@@ -202,7 +166,7 @@ def qscreen(tuorbon,timeint):
     qframe.grid(row=1,column=0)
     qcanvas=tk.Canvas(qframe,width=600,height=400,background="white")
     qcanvas.pack()
-    qtext=qcanvas.create_text(int(qcanvas['width'])/2,int(qcanvas['height'])/2,text='Press [Next/Skip] to start', width=qcanvas['width'], fill="black",font=("times new roman", 15))
+    qtext=qcanvas.create_text(int(qcanvas['width'])/2,int(qcanvas['height'])/2,text='Press [Next/Skip] to start', width=qcanvas['width'], fill="black",font=("times new roman", 13))
     bframe=tk.LabelFrame(root, text='Controls')
     bframe.grid(row=2,column=0)
     controlframe=tk.Frame(bframe)
@@ -239,7 +203,6 @@ def qscreen(tuorbon,timeint):
         return messagebox.askyesno("Were you correct?","Were you correct?\nYour answer: %s\nActual answer: %s"%(gans,aans))
     def checkanswer():
         global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn
-        
         if not ansalrgiven and not dead:
             root.unbind("<Return>")
             if timeoutctr!=None:
@@ -250,9 +213,10 @@ def qscreen(tuorbon,timeint):
             ansalrgiven=True
             answerline.delete(0,len(givenans))
             if tbrn==0:
+                fans=tufalist[tunum]
                 actualans=tualist[tunum]
                 if buzzed:
-                    if close_enough(givenans.lower(),actualans.lower()):
+                    if close_enough(givenans.lower(),fans):
                         if curwd<=pm:
                             tupts+=15
                             ptn[0]+=1
@@ -298,8 +262,9 @@ def qscreen(tuorbon,timeint):
                 answerline['state']='disabled'
                 enterans['state']='disabled'
                 root.unbind("<Return>")
+                fans=bonfalist[bonnum][subbonnum]
                 actualans=bonalist[bonnum][subbonnum]
-                if close_enough(givenans.lower(),actualans.lower()):
+                if close_enough(givenans.lower(),fans):
                     curbpts+=10
                 else:
                     if prompt(givenans,actualans):
@@ -372,8 +337,7 @@ def qscreen(tuorbon,timeint):
                 if reading and tbrn==0:
                     buzzer['state']='normal'
                     root.bind("<space>", lambda event: buzzin())
-                    
-                qcanvas.itemconfigure(qtext, font=("times new roman", 15))
+                qcanvas.itemconfigure(qtext, font=("times new roman", 13))
                 read_tossup(qframe,qcanvas,qtext,thyme)
             elif tuorbon==1:
                 if bonnum>=len(bonlist):
@@ -412,7 +376,7 @@ def qscreen(tuorbon,timeint):
                     if reading and tbrn==0:
                         buzzer['state']='normal'
                         root.bind("<space>", lambda event: buzzin())
-                    qcanvas.itemconfigure(qtext, font=("times new roman", 15))
+                    qcanvas.itemconfigure(qtext, font=("times new roman", 13))
                     read_tossup(qframe,qcanvas,qtext,thyme)
                 else:
                     if reading and tbrn==1:
@@ -425,6 +389,7 @@ def qscreen(tuorbon,timeint):
                     answerline.focus_set()
                     read_bonus(qframe,qcanvas,qtext,thyme)
         else:
+            answerline.delete(0,len(is_this_correct.get()))
             qskipped=True
             if qctr:
                 qframe.after_cancel(qctr)
@@ -525,6 +490,17 @@ def qscreen(tuorbon,timeint):
     root.focus_force()
     root.mainloop()
 def close_enough(str1,str2):
+    accepans=set()
+    s=bs4.BeautifulSoup(str2, features="html.parser")
+    strongs=s.find_all("strong")
+    for i in strongs:
+        accepans.add(i.string.lower())
+    bs=s.find_all("b")
+    for i in bs:
+        accepans.add(i.string.lower())
+    for i in accepans:
+        if enchant.utils.levenshtein(str1,i)<min(3,len(i)//2):
+            return True
     dna=str2.find("(")
     if dna<0:
         dna=str2.find("[")
@@ -533,11 +509,11 @@ def close_enough(str1,str2):
             if dna<0:
                 dna=str2.find('<')
     if dna<0:
-        if enchant.utils.levenshtein(str1,str2)<len(str2)/2:
+        if enchant.utils.levenshtein(str1,str2)<min(3,len(str2)//2):
             return True
     else:
         s=str2[:dna]
-        if enchant.utils.levenshtein(s,str1)<len(s)/2:
+        if enchant.utils.levenshtein(s,str1)<min(3,len(str2)//2):
             return True
     return False
 def check_if_buzz_at_eotu():
@@ -621,11 +597,68 @@ def iterbon(allread, words, i, window,canvas,question_txt,timeint):
         canvas.itemconfigure(question_txt, text=allread+' '.join(words[:i]))
         i += 1
         qctr = window.after(timeint.get(), lambda: iterbon(allread,words, i,window,canvas,question_txt,timeint))
+
+
+def fetchqs(cats,subcats,diffs,tours,tuorbon):
+    global tulist,tualist,tufalist,bonlist,bonalist,bonfalist
+    catids={"Current Events":26, "Fine Arts":21, "Geography":20, "History":18, "Literature":15, "Mythology":14, "Philosophy":25, "Religion":19, "Science":17, "Social Science":22, "Trash":16}
+    subcatids={'American Current Events':40, 'Other Current Events':42, 'American Fine Arts':35, 'Audiovisual Fine Arts':27, 'Auditory Fine Arts':8, 'British Fine Arts':45, 'European Fine Arts':50, 'Opera':77, 'Visual Fine Arts':2, 'World Fine Arts':43, 'Other Fine Arts':25, 'American Geography':38, 'World Geography':44, 'American History':13, 'British History':6, 'Classical History':16, 'European History':24, 'World History':20, 'Other History':28, 'American Literature':4, 'British Literature':22, 'Classical Literature':30, 'European Literature':1, 'World Literature':12, 'Other Literature':29, 'American Mythology':33, 'Chinese Mythology':47, 'Egyptian Mythology':65, 'Greco-Roman Mythology':58, 'Indian Mythology':46, 'Japanese Mythology':48, 'Norse Mythology':63, 'Other East Asian Mythology':49, 'Other Mythology':54, 'American Philosophy':39, 'Classical Philosophy':61, 'East Asian Philosophy':52, 'European Philosophy':66, 'Other Philosophy':74, 'American Religion':31, 'Christianity':57, 'East Asian Religion':51, 'Islam':68, 'Judaism':69, 'Other Religion':62, 'American Science':36, 'Biology':14, 'Chemistry':5, 'Computer Science':23, 'Math':26, 'Physics':18, 'World Science':37, 'Other Science':10, 'American Social Science':34, 'Anthropology':76, 'Economics':56, 'Linguistics':75, 'Political Science':64, 'Psychology':71, 'Sociology':73, 'Other Social Science':60, 'American Trash':32, 'Movies':72, 'Music':67, 'Sports':55, 'Television':70, 'Video Games':53, 'Other Trash':59}
+    clist=set()
+    sclist=set()
+    dlist=set(diffs)
+    tlist=set(tours)
+    for i in cats:
+        clist.add(catids[i])
+    for i in subcats:
+        sclist.add(subcatids[i])
+    print(clist,sclist,dlist,tlist)
+    with open('quizdb-20220122021550.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    if tuorbon==0 or tuorbon==2:
+        for i in data["data"]["tossups"]:
+            if i["text"]!="[missing]" and i["answer"]!="[missing]" and i["tournament_id"]:
+                if (i["category_id"] in clist or i["subcategory_id"] in sclist) and (i["tournament"]["difficulty_num"] in dlist or i["tournament_id"] in tlist):
+                    tulist.append(i["text"])
+                    a=i["answer"]
+                    if a.find("&lt")>=0:
+                        a=a[:a.find("&lt")]
+                    elif a.find("<")>=0:
+                        a=a[:a.find("<")]
+                    tualist.append(a)
+                    tufalist.append(i["formatted_answer"])
+        if len(tulist)>0:
+            tus=list(zip(tulist,tufalist,tualist))
+            random.shuffle(tus)
+            tulist,tufalist,tualist=zip(*tus)
+    if tuorbon==1 or tuorbon==2:
+        for i in data["data"]["bonuses"]:
+            if len(i["texts"])!=0 and len(i["answers"])!=0 and i["tournament_id"]:
+                if (i["category_id"] in clist or i["subcategory_id"] in sclist) and (i["tournament"]["difficulty_num"] in dlist or i["tournament_id"] in tlist):
+                    b=i["texts"]
+                    b[0]=i["leadin"]+"\n"+b[0]
+                    bonlist.append(b)
+                    a=i["answers"]
+                    for n,j in enumerate(a):
+                        if j.find("&lt")>=0:
+                            a[n]=j[:j.find("&lt")]
+                        elif j.find("<")>=0:
+                            a[n]=j[:j.find("<")]
+                    bonalist.append(a)
+                    bonfalist.append(i["formatted_answers"])
+        if len(bonlist)>0:
+            bons=list(zip(bonlist,bonfalist,bonalist))
+            random.shuffle(bons)
+            bonlist,bonfalist,bonalist=zip(*bons)
+
+
+
 setup()
 if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
+    print(cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)
     if ttbb<2:
         tbrn=ttbb
     else:
         tbrn=0
+    fetchqs(cc,sscc,dd,ttoouurr,ttbb)
     qscreen(ttbb,tthhyymmee)
-#turn tournaments option into a dropdown sometime when granted access to quizdb db
+#turn tournaments option into a dropdown
