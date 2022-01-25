@@ -1,4 +1,4 @@
-import sys, tkinter as tk,enchant,random,json,bs4
+import sys, tkinter as tk,enchant,random,json,bs4,datetime
 from tkinter import messagebox
 ccccc=["Current Events", "Fine Arts", "Geography", "History", "Literature", "Mythology", "Philosophy", "Religion", "Science", "Social Science", "Trash"]
 sssssccccc={"Current Events Subcategories":["American Current Events", "Other Current Events"], "Fine Arts Subcategories":["American Fine Arts", "Audiovisual Fine Arts", "Auditory Fine Arts", "British Fine Arts", "European Fine Arts", "Opera", "Visual Fine Arts", "World Fine Arts", "Other Fine Arts"], "Geography Subcategories":["American Geography", "World Geography"], "History Subcategories":["American History", "British History", "Classical History", "European History", "World History", "Other History"], "Literature Subcategories":["American Literature", "British Literature", "Classical Literature", "European Literature", "World Literature", "Other Literature"], "Mythology Subcategories":["American Mythology", "Chinese Mythology", "Egyptian Mythology", "Greco-Roman Mythology", "Indian Mythology", "Japanese Mythology", "Norse Mythology", "Other East Asian Mythology", "Other Mythology"], "Philosophy Subcategories":["American Philosophy", "Classical Philosophy", "East Asian Philosophy", "European Philosophy", "Other Philosophy"], "Religion Subcategories":["American Religion", "Christianity", "East Asian Religion", "Islam", "Judaism", "Other Religion"], "Science Subcategories":["American Science", "Biology", "Chemistry", "Computer Science", "Math", "Physics", "World Science", "Other Science"], "Social Science Subcategories":["American Social Science", "Anthropology", "Economics", "Linguistics", "Political Science", "Psychology", "Sociology", "Other Social Science"], "Trash Subcategories":["American Trash", "Movies", "Music", "Sports", "Television", "Video Games", "Other Trash"]}
@@ -8,7 +8,7 @@ cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,
 buzzed,reading,dead,ansalrgiven,qskipped=False,False,False,False,False
 ptn,bagels=[0,0,0],[0,0,0,0]
 tu,bon,tupts,bpts,tunum,bonnum,subbonnum,pm,curwd,curbpts,tbrn=0,0,0,0,-1,-1,0,0,0,0,0
-tulist,tualist,tufalist,bonlist,bonalist,bonfalist=[],[],[],[],[],[]
+tulist,tualist,tufalist,tustatus,bonlist,bonalist,bonfalist,bonstatus,subbonstatus=[],[],[],[],[],[],[],[],[]
 class ToolTip(object):
     def __init__(self, widget):
         self.widget = widget
@@ -59,11 +59,68 @@ def handback(c,sc,d,tour,tb,tint):
     global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee
     cc,sscc,dd,ttoouurr,ttbb,tthhyymmee=c,sc,d,tour,tb,tint
     return
+def gencard():
+    s=''
+    if len(tulist)!=0:
+        tstr='TOSSUPS\n'
+        tstr+="\nTOSSUPS: %s"%len(tulist)
+        tstr+="\nTOSSUPS SKIPPED: %s"%tustatus.count('skipped')
+        tstr+="\nTOSSUPS HEARD: %s"%(tu)
+        tstr+="\nTOSSUP POINTS: %s"%(tupts)
+        tstr+="\nPOINTS PER TOSSUP HEARD: %s"%(0.0 if tu==0 else round(tupts/tu,2))
+        tstr+="\n15s/10s/0s/-5s: %s/%s/%s/%s"%(ptn[0],ptn[1],tustatus.count(0),ptn[2])
+        tstr+="\n"
+        for i in range(len(tulist)):
+            tstr+="\nTOSSUP #%s"%(i+1)
+            tstr+="\nQUESTION: %s"%tulist[i]
+            tstr+="\nANSWER: %s"%tualist[i]
+            tstr+="\nSCORE: %s"%(tustatus[i])
+            tstr+="\n"
+        s+=tstr
+    if len(tulist)!=0 and len(bonlist)!=0:
+        s+="\n\n"
+    if len(bonlist)!=0:
+        bstr='BONUSES\n'
+        bstr+="\nBONUSES: %s"%len(bonlist)
+        bstr+="\nBONUSES SKIPPED: %s"%bonstatus.count('skipped')
+        bstr+="\nBONUSES HEARD: %s"%(bon)
+        bstr+="\nBONUS POINTS: %s"%(bpts)
+        bstr+="\nPOINTS PER BONUS HEARD: %s"%(0.0 if bon==0 else round(bpts/bon,2))
+        bstr+="\n30s/20s/10s/0s: %s/%s/%s/%s"%tuple(bagels)
+        bstr+="\n"
+        for i in range(len(bonlist)):
+            bstr+="\nBONUS #%s"%(i+1)
+            for j in range(len(bonlist[i])):
+                bstr+="\nQUESTION: %s"%bonlist[i][j]
+                bstr+="\nANSWER: %s"%bonalist[i][j]
+                bstr+="\nSCORE: %s"%(bonstatus[i][j] if bonstatus[i]!="skipped" else 'skipped')
+            bstr+="\n"
+        s+=bstr
+    if len(tulist)!=0 or len(bonlist)!=0:
+        t=datetime.datetime.now()
+        d=str(t.year)
+        for i in (t.month, t.day, t.hour, t.minute, t.second):
+            if len(str(i))<2:
+                d+="0"
+            d+=str(i)
+        with open("stats-%s.txt"%d,'w',encoding='utf-8') as f:
+            f.write(s)
+def leaveforreal():
+    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum
+    tulist=tulist[:tunum+1]
+    tualist=tualist[:tunum+1]
+    tufalist=tufalist[:tunum+1]
+    bonlist=bonlist[:bonnum+1]
+    bonalist=bonalist[:bonnum+1]
+    bonfalist=bonfalist[:bonnum+1]
+    if messagebox.askyesno("Leave?", "Do you want to quit this reader? (Press y/n)"):
+        gencard()
+        sys.exit()
 def setup():
     root=tk.Tk()
     root.geometry("+20+20")
     root.focus_force()
-    root.title("yet another qb reader")
+    root.title("QBits")
     root.resizable(False,False)
     root.bind_all("<Button-1>", lambda event: event.widget.focus_set())
     fram1=tk.Frame(root)
@@ -75,6 +132,9 @@ def setup():
     catt["menu"] = catt.menu
     for i in range(len(ccccc)):
         catt.menu.add_checkbutton(label=ccccc[i],variable=cats[i])
+    if cc!=ccccc and cc:
+        for i in cc:
+            cats[ccccc.index(i)].set(1)
     lcats=tk.Button(fram1, text='❔')
     allsubcatlist=[]
     for i in sssssccccc:
@@ -88,6 +148,9 @@ def setup():
         subcatt.menu.add_command(label=i,state='disabled')
         for j in sssssccccc[i]:
             subcatt.menu.add_checkbutton(label=j,variable=subcats[allsubcatlist.index(j)])
+    if sscc:
+        for i in sscc:
+            subcats[allsubcatlist.index(i)].set(1)
     lsubcats=tk.Button(fram1, text='❔')
     diffs=[tk.IntVar() for i in range(len(ddddd))]
     diffl=tk.Label(fram1, text = 'Difficulties: ', font=('calibri',10, 'bold'))
@@ -95,7 +158,10 @@ def setup():
     difft.menu =  tk.Menu (difft, tearoff = 0 )
     difft["menu"] = difft.menu
     for i in ddddd:
-        difft.menu.add_checkbutton(label=i,variable=diffs[int(i)-1])
+        difft.menu.add_checkbutton(label=i,variable=diffs[i-1])
+    if dd!=ddddd and dd:
+        for i in dd:
+            diffs[i-1].set(1)
     ldiffs=tk.Button(fram1, text='❔')
     alltourlist=[]
     for i in tttttooooouuuuurrrrr:
@@ -109,6 +175,9 @@ def setup():
         tourt.menu.add_command(label=i,state='disabled')
         for j in tttttooooouuuuurrrrr[i]:
             tourt.menu.add_checkbutton(label=j,variable=tours[alltourlist.index(j)])
+    if ttoouurr:
+        for i in ttoouurr:
+            tours[alltourlist.index(i)].set(1)
     ltours=tk.Button(fram1, text='❔')
     catl.grid(row=0,column=0, sticky="e")
     catt.grid(row=0,column=1,padx=(0,5))
@@ -149,9 +218,9 @@ def setup():
     tubonex=tk.Button(fram3, text='❔')
     def submit():
         c=[ccccc[i] for i in range(len(ccccc)) if cats[i].get()>0]
-        if c==[]:
-            c=ccccc
         sc=[allsubcatlist[i] for i in range(len(allsubcatlist)) if subcats[i].get()>0]
+        if c==[] and sc==[]:
+            c=ccccc
         d=[ddddd[i] for i in range(len(ddddd)) if diffs[i].get()>0]
         t=[alltourlist[i] for i in range(len(alltourlist)) if tours[i].get()>0]
         if d==[] and t==[]:
@@ -167,9 +236,9 @@ def setup():
     contr=tk.Button(fram4,text = 'Controls')
     CreateToolTip(contr, text = """Keybinds:\n/ → [Next/Skip]\nSpace → [Buzz]\nEnter → [Enter]\nEscape → [Quit]\n\nWhen the question starts, you will be able to live-adjust the time interval between words. \nDuring bonuses, the buzzer button should be disabled to prevent accidental buzzing during \nthem. You should be able to see your stats at the top of the window. """)
     sumbit=tk.Button(fram4,text = 'Go [Enter]', command = submit)
-    quibt=tk.Button(fram4,text = 'Quit [Esc]', command = sys.exit)
+    quibt=tk.Button(fram4,text = 'Quit [Esc]', command = leaveforreal)
     root.bind('<Return>',lambda event:submit())
-    root.bind('<Escape>',lambda event:sys.exit())
+    root.bind('<Escape>',lambda event:leaveforreal())
     tuorbon.grid(row=0,column=0, sticky="e")
     tu.grid(row=0,column=1, sticky="w")
     bon.grid(row=0,column=2, sticky="w")
@@ -182,24 +251,31 @@ def setup():
     quibt.grid(row=0,column=3,padx=(10,0),pady=(0,5))
     root.mainloop()
 def backtohomescreen():
-    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum
+    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum
     tulist=tulist[:tunum+1]
     tualist=tualist[:tunum+1]
     tufalist=tufalist[:tunum+1]
     bonlist=bonlist[:bonnum+1]
     bonalist=bonalist[:bonnum+1]
     bonfalist=bonfalist[:bonnum+1]
-    print(tulist,bonlist)
+    if reading or (not reading and not dead and not ansalrgiven):
+        if tbrn==0:
+            tustatus.append('skipped')
+            tunum+=1
+        else:
+            bonstatus.append('skipped')
+            bonnum+=1
+            subbonstatus=[]
     if qctr:
         qframe.after_cancel(qctr)
     if endctr:
         qframe.after_cancel(endctr)
     if timeoutctr:
         root.after_cancel(timeoutctr)
-    cc,sscc,dd,ttoouurr,ttbb,tthhyymmee=None,None,None,None,None,None
     root.destroy()
     buzzed,reading,dead,ansalrgiven,qskipped=False,False,False,False,False
-    subbonnum=0
+    pm,curwd,curbpts=0,0,0
+    subbonnum=-1
     setup()
     if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
         if ttbb<2:
@@ -209,10 +285,10 @@ def backtohomescreen():
         fetchqs(cc,sscc,dd,ttoouurr,ttbb)
         qscreen(ttbb,tthhyymmee)
 def qscreen(tuorbon,timeint):
-    global buzzed,root,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,qframe
+    global buzzed,root,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,qframe,tustatus,subbonstatus,bonstatus
     root=tk.Tk()
     root.geometry("+20+20")
-    root.title('yet another qb reader')
+    root.title('QBits')
     root.resizable(False,False)
     root.bind_all("<Button-1>", lambda event: event.widget.focus_set())
     topf=tk.Frame(root)
@@ -229,7 +305,7 @@ def qscreen(tuorbon,timeint):
     controlframe=tk.Frame(bframe)
     controlframe.grid(row=0,column=0)
     qbt=tk.Button(topf,text='Back [Esc]',command=backtohomescreen)
-    lbt=tk.Button(topf,text='Leave [Ctrl+W]',command=sys.exit)
+    lbt=tk.Button(topf,text='Leave [Ctrl+W]',command=leaveforreal)
     buzzed=False
     tuct=tk.Label(statframe,text='Tossups: %s'%(tu))
     tossuppts=tk.Label(statframe,text='Tossup Points: %s'%(tupts))
@@ -256,12 +332,12 @@ def qscreen(tuorbon,timeint):
         answerline.focus_set()
         timeoutctr=root.after(8000,checkanswer)
     def checkanswer():
-        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn
+        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn,tustatus,bonstatus,subbonstatus
         if not ansalrgiven and not dead:
             root.unbind("<Return>")
-            if timeoutctr!=None:
+            if timeoutctr:
                 root.after_cancel(timeoutctr)
-            if endctr!=None:
+            if endctr:
                 qframe.after_cancel(endctr)
             givenans=is_this_correct.get()
             ansalrgiven=True
@@ -274,29 +350,39 @@ def qscreen(tuorbon,timeint):
                         if curwd<=pm:
                             tupts+=15
                             ptn[0]+=1
+                            tustatus.append(15)
                         else:
                             tupts+=10
                             ptn[1]+=1
+                            tustatus.append(10)
                     else:
                         if reading:
                             if prompt(givenans,actualans):
                                 if curwd<=pm:
                                     tupts+=15
                                     ptn[0]+=1
+                                    tustatus.append(15)
                                 else:
                                     tupts+=10
                                     ptn[1]+=1
+                                    tustatus.append(10)
                             else:
                                 tupts-=5
                                 ptn[2]+=1
+                                tustatus.append(-5)
                         else:
                             if prompt(givenans,actualans):
                                 if curwd<=pm:
                                     tupts+=15
                                     ptn[0]+=1
+                                    tustatus.append(15)
                                 else:
                                     tupts+=10
                                     ptn[1]+=1
+                                    tustatus.append(10)
+                            else:
+                                tupts-=0
+                                tustatus.append(0)
                     tu+=1
                     qcanvas.itemconfigure(qtext,text=tulist[tunum]+'\n\n'+tualist[tunum])
                     answerline['state']='disabled'
@@ -320,11 +406,14 @@ def qscreen(tuorbon,timeint):
                 actualans=bonalist[bonnum][subbonnum]
                 if close_enough(givenans.lower(),fans,actualans.lower()):
                     curbpts+=10
+                    subbonstatus.append(10)
                 else:
                     if prompt(givenans,actualans):
                         curbpts+=10
+                        subbonstatus.append(10)
                     else:
                         curbpts+=0
+                        subbonstatus.append(0)
                 reading=False
                 aread=bonlist[bonnum][:subbonnum]
                 allread=''
@@ -335,6 +424,8 @@ def qscreen(tuorbon,timeint):
                 read['state']='normal'
                 root.bind('</>', lambda event: readq())
                 if subbonnum==2:
+                    bonstatus.append(subbonstatus)
+                    subbonstatus=[]
                     bon+=1
                     bpts+=curbpts
                     bagels[(30-curbpts)//10]+=1
@@ -363,8 +454,8 @@ def qscreen(tuorbon,timeint):
     timenter.grid(row=0,column=1)
     thyme.grid(row=0,column=2)
     def readq():
-        global reading,buzzed,tunum,dead,ansalrgiven,qskipped,bonnum,subbonnum,curbpts
-        if not reading:
+        global reading,buzzed,tunum,dead,ansalrgiven,qskipped,bonnum,subbonnum,curbpts,tustatus,bonstatus,subbonstatus
+        if not reading and not dead:
             reading=True
             buzzed=False
             dead=False
@@ -385,15 +476,14 @@ def qscreen(tuorbon,timeint):
                     read['state']='disabled'
                     root.unbind('</>')
                     thyme['state']='disabled'
+                    timenter['state']='disabled'
                     buzzer['state']='disabled'
                     root.unbind("<space>")
                     answerline['state']='disabled'
                     enterans['state']='disabled'
                     root.unbind("<Return>")
                     return
-                print(reading,tbrn)
                 if reading and tbrn==0:
-                    print("yes")
                     buzzer['state']='normal'
                     root.bind("<space>", lambda event: buzzin())
                 qcanvas.itemconfigure(qtext, font=("times new roman", 13))
@@ -404,6 +494,7 @@ def qscreen(tuorbon,timeint):
                     read['state']='disabled'
                     root.unbind('</>')
                     thyme['state']='disabled'
+                    timenter['state']='disabled'
                     buzzer['state']='disabled'
                     root.unbind("<space>")
                     answerline['state']='disabled'
@@ -426,6 +517,7 @@ def qscreen(tuorbon,timeint):
                         read['state']='disabled'
                         root.unbind('</>')
                         thyme['state']='disabled'
+                        timenter['state']='disabled'
                         buzzer['state']='disabled'
                         root.unbind("<space>")
                         answerline['state']='disabled'
@@ -443,6 +535,7 @@ def qscreen(tuorbon,timeint):
                         read['state']='disabled'
                         root.unbind('</>')
                         thyme['state']='disabled'
+                        timenter['state']='disabled'
                         buzzer['state']='disabled'
                         root.unbind("<space>")
                         answerline['state']='disabled'
@@ -469,12 +562,14 @@ def qscreen(tuorbon,timeint):
                 root.after_cancel(timeoutctr)
             qskipped=False
             if tuorbon==0:
+                tustatus.append('skipped')
                 tunum+=1
                 if tunum>=len(tulist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                     read['state']='disabled'
                     root.unbind('</>')
                     thyme['state']='disabled'
+                    timenter['state']='disabled'
                     buzzer['state']='disabled'
                     root.unbind("<space>")
                     answerline['state']='disabled'
@@ -483,6 +578,8 @@ def qscreen(tuorbon,timeint):
                     return
                 read_tossup(qframe,qcanvas,qtext,thyme)
             elif tuorbon==1:
+                bonstatus.append('skipped')
+                subbonstatus=[]
                 bonnum+=1
                 subbonnum=0
                 curbpts=0
@@ -491,6 +588,7 @@ def qscreen(tuorbon,timeint):
                     read['state']='disabled'
                     root.unbind('</>')
                     thyme['state']='disabled'
+                    timenter['state']='disabled'
                     buzzer['state']='disabled'
                     root.unbind("<space>")
                     answerline['state']='disabled'
@@ -501,12 +599,14 @@ def qscreen(tuorbon,timeint):
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
                 if tbrn==0:
+                    tustatus.append('skipped')
                     tunum+=1
                     if tunum>=len(tulist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                         read['state']='disabled'
                         root.unbind('</>')
                         thyme['state']='disabled'
+                        timenter['state']='disabled'
                         buzzer['state']='disabled'
                         root.unbind("<space>")
                         answerline['state']='disabled'
@@ -515,6 +615,8 @@ def qscreen(tuorbon,timeint):
                         return
                     read_tossup(qframe,qcanvas,qtext,thyme)
                 else:
+                    bonstatus.append('skipped')
+                    subbonstatus=[]
                     bonnum+=1
                     subbonnum=0
                     curbpts=0
@@ -523,6 +625,7 @@ def qscreen(tuorbon,timeint):
                         read['state']='disabled'
                         root.unbind('</>')
                         thyme['state']='disabled'
+                        timenter['state']='disabled'
                         buzzer['state']='disabled'
                         root.unbind("<space>")
                         answerline['state']='disabled'
@@ -553,16 +656,16 @@ def qscreen(tuorbon,timeint):
         bonuspts.grid(row=1,column=1)
         ppb.grid(row=1,column=2)
         tttb.grid(row=1,column=3)
-    answerline.grid(row=0,column=3)
-    buzzer.grid(row=0,column=2)
+    answerline.grid(row=0,column=3,padx=(5,5))
+    buzzer.grid(row=0,column=2,padx=(5,5))
     qbt.grid(row=0,column=1,padx=(5,5))
     lbt.grid(row=0,column=2)
     root.bind('<Escape>',lambda event:backtohomescreen())
-    root.bind('<Control-w>',lambda event:sys.exit())
+    root.bind('<Control-w>',lambda event:leaveforreal())
     root.focus_force()
     root.mainloop()
 def prompt(gans,aans):
-        if gans.strip()=='idk' or gans.strip()=='':
+        if gans.strip()=='idk' or gans.strip()=='' or (gans.strip()=="n" and aans!="n"):
             return False
         return messagebox.askyesno("Were you correct?","Were you correct? (Press y/n)\nYour answer: %s\nActual answer: %s"%(gans,aans))
 def close_enough(given,htmlans,normalans):
@@ -592,9 +695,9 @@ def close_enough(given,htmlans,normalans):
     return False
 def check_if_buzz_at_eotu():
     global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,reading
-    reading=False
     if reading==False and buzzed==False:
         dead=True
+        tustatus.append(0)
         tu+=1
         qcanvas.itemconfigure(qtext,text=tulist[tunum]+'\n\n'+tualist[tunum])
         tuct['text']='Tossups: %s'%(tu)
@@ -604,15 +707,19 @@ def check_if_buzz_at_eotu():
         root.update()
 def check_if_buzz_at_eobon():
     global dead,bon,bonct,bonuspts,ppb,tttb,curbpts,answerline,reading
-    reading=False
     ans=is_this_correct.get()
     if ans!="":
         answerline.delete(0,len(ans))
         if close_enough(ans.lower(),bonfalist[bonnum][subbonnum],bonalist[bonnum][subbonnum].lower()):
             curbpts+=10
+            subbonstatus.append(10)
         else:
             if prompt(ans,bonalist[bonnum][subbonnum]):
                 curbpts+=10
+                subbonstatus.append(10)
+            else:
+                curbpts+=0
+                subbonstatus.append(0)
     if reading==False and ansalrgiven==False:
         dead=True
         answerline['state']='disabled'
@@ -642,6 +749,7 @@ def itertu(words, i, window,canvas,question_txt,timeint):
     curwd=i-1
     if i > len(words):
         global reading,endctr
+        reading=False
         endctr=window.after(5000,check_if_buzz_at_eotu)
         return
     if qskipped:
@@ -666,6 +774,7 @@ def read_bonus(window,canvas,question_txt,timeint):
 def iterbon(allread, words, i, window,canvas,question_txt,timeint):
     if i > len(words):
         global reading,endctr,qctr
+        reading=False
         endctr=window.after(10000,check_if_buzz_at_eobon)
         return
     if qskipped:
@@ -752,6 +861,3 @@ if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
         tbrn=0
     fetchqs(cc,sscc,dd,ttoouurr,ttbb)
     qscreen(ttbb,tthhyymmee)
-
-#make quit in qscreen go back to setup input screen so that users can change cats and diffs in one session
-#also add function which exports questions and stats and all to txt, as well as exports qs to cards
