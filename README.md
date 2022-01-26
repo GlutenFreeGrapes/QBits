@@ -1,5 +1,5 @@
 # QBits
-This program of mine will join the ever-growing list of quizbowl question readers out there. I decided to try and combine tossup readers like Protobowl and QuizBug and bonus readers like pkbot to create an all-in-one solo studying program for reading questions. 
+An all-in-one quizbowl question reader. 
 
 ## Keybinds
 ### Select Questions Window
