@@ -5,7 +5,7 @@ sssssccccc={"Current Events Subcategories":["American Current Events", "Other Cu
 ddddd=list(range(1,10))
 tttttooooouuuuurrrrr,tourids=dict(),dict()
 cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,root,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,timeoutctr,endctr,qctr,qframe=None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
-buzzed,reading,dead,ansalrgiven,qskipped=False,False,False,False,False
+buzzed,reading,dead,ansalrgiven,qskipped,qfromreader=False,False,False,False,False,False
 ptn,bagels=[0,0,0],[0,0,0,0]
 tu,bon,tupts,bpts,tunum,bonnum,subbonnum,pm,curwd,curbpts,tbrn=0,0,0,0,-1,-1,0,0,0,0,0
 tulist,tualist,tufalist,tustatus,bonlist,bonalist,bonfalist,bonstatus,subbonstatus=[],[],[],[],[],[],[],[],[]
@@ -106,17 +106,28 @@ def gencard():
         with open("stats-%s.txt"%d,'w',encoding='utf-8') as f:
             f.write(s)
 def leaveforreal():
-    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum
+    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum,qfromreader
     tulist=tulist[:tunum+1]
     tualist=tualist[:tunum+1]
     tufalist=tufalist[:tunum+1]
     bonlist=bonlist[:bonnum+1]
     bonalist=bonalist[:bonnum+1]
     bonfalist=bonfalist[:bonnum+1]
+    if qfromreader:
+        if reading or (not reading and not dead and not ansalrgiven):
+            if tbrn==0:
+                tustatus.append('skipped')
+                tunum+=1
+            else:
+                bonstatus.append('skipped')
+                bonnum+=1
+                subbonstatus=[]
     if messagebox.askyesno("Leave?", "Do you want to quit this reader? (Press y/n)"):
         gencard()
         sys.exit()
 def setup():
+    global qfromreader
+    qfromreader=False
     root=tk.Tk()
     root.geometry("+20+20")
     root.focus_force()
@@ -234,8 +245,8 @@ def setup():
     abt=tk.Button(fram4,text = 'About')
     CreateToolTip(abt, text = "Hello, I'm GlutenFreeGrapes. I created this program in January 2022 \nas an all-in-one self-study tool. \n\n★★★★★Why this?★★★★★\nI made this because every quizbowl studying tool out there was either \na tossup reader or a bonus reader, but never both. So, I decided to try \nand make one myself. \n\n★★★★★Credits★★★★★\nThis was inspired by Kevin Kwok's Protobowl, Karan Gurazada's QuizBug, \nand Pratyush Jaishanker's pkbot. \nThis program uses QuizDB, which was developed by Raynor Kuang.\n\n★★★★★Contact★★★★★\nMy Github is @GlutenFreeGrapes. \nMy hsquizbowl forums username is GlutenFreeGrapes. ")
     contr=tk.Button(fram4,text = 'Controls')
-    CreateToolTip(contr, text = """Keybinds:\n/ → [Next/Skip]\nSpace → [Buzz]\nEnter → [Enter]\nEscape → [Quit]\n\nWhen the question starts, you will be able to live-adjust the time interval between words. \nDuring bonuses, the buzzer button should be disabled to prevent accidental buzzing during \nthem. You should be able to see your stats at the top of the window. """)
     sumbit=tk.Button(fram4,text = 'Go [Enter]', command = submit)
+    CreateToolTip(contr, text = """Keybinds:\n[\] → [Next/Skip]\n[Space] → [Buzz]\n[Enter] → [Enter]\n[Escape] → [Back]\n[Ctrl+W] → [Leave]\n\nWhen the question starts, you will be able to live-adjust the time interval between words. \nDuring bonuses, the buzzer button should be disabled to prevent accidental buzzing during \nthem. You should be able to see your stats at the top of the window. """)
     quibt=tk.Button(fram4,text = 'Quit [Esc]', command = leaveforreal)
     root.bind('<Return>',lambda event:submit())
     root.bind('<Escape>',lambda event:leaveforreal())
@@ -285,7 +296,8 @@ def backtohomescreen():
         fetchqs(cc,sscc,dd,ttoouurr,ttbb)
         qscreen(ttbb,tthhyymmee)
 def qscreen(tuorbon,timeint):
-    global buzzed,root,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,qframe,tustatus,subbonstatus,bonstatus
+    global buzzed,root,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,qframe,tustatus,subbonstatus,bonstatus,qfromreader
+    qfromreader=True
     root=tk.Tk()
     root.geometry("+20+20")
     root.title('QBits')
@@ -326,7 +338,7 @@ def qscreen(tuorbon,timeint):
         buzzer['state']='disabled'
         root.unbind("<space>")
         read['state']='disabled'
-        root.unbind('</>')
+        root.unbind('<\>')
         if endctr:
             qframe.after_cancel(endctr)
         answerline.focus_set()
@@ -389,7 +401,7 @@ def qscreen(tuorbon,timeint):
                     enterans['state']='disabled'
                     root.unbind("<Return>")
                     read['state']='normal'
-                    root.bind('</>', lambda event: readq())
+                    root.bind('<\>', lambda event: readq())
                     reading=False
                     tuct['text']='Tossups: %s'%(tu)
                     tossuppts['text']='Tossup Points: %s'%(tupts)
@@ -422,7 +434,7 @@ def qscreen(tuorbon,timeint):
                     allread+="\n\n"+bonalist[bonnum][n]+"\n\n"
                 qcanvas.itemconfigure(qtext,text=allread+bonlist[bonnum][subbonnum]+"\n\n"+bonalist[bonnum][subbonnum])
                 read['state']='normal'
-                root.bind('</>', lambda event: readq())
+                root.bind('<\>', lambda event: readq())
                 if subbonnum==2:
                     bonstatus.append(subbonstatus)
                     subbonstatus=[]
@@ -474,7 +486,7 @@ def qscreen(tuorbon,timeint):
                 if tunum>=len(tulist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                     read['state']='disabled'
-                    root.unbind('</>')
+                    root.unbind('<\>')
                     thyme['state']='disabled'
                     timenter['state']='disabled'
                     buzzer['state']='disabled'
@@ -492,7 +504,7 @@ def qscreen(tuorbon,timeint):
                 if bonnum>=len(bonlist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                     read['state']='disabled'
-                    root.unbind('</>')
+                    root.unbind('<\>')
                     thyme['state']='disabled'
                     timenter['state']='disabled'
                     buzzer['state']='disabled'
@@ -515,7 +527,7 @@ def qscreen(tuorbon,timeint):
                     if tunum>=len(tulist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                         read['state']='disabled'
-                        root.unbind('</>')
+                        root.unbind('<\>')
                         thyme['state']='disabled'
                         timenter['state']='disabled'
                         buzzer['state']='disabled'
@@ -533,7 +545,7 @@ def qscreen(tuorbon,timeint):
                     if bonnum>=len(bonlist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                         read['state']='disabled'
-                        root.unbind('</>')
+                        root.unbind('<\>')
                         thyme['state']='disabled'
                         timenter['state']='disabled'
                         buzzer['state']='disabled'
@@ -567,7 +579,7 @@ def qscreen(tuorbon,timeint):
                 if tunum>=len(tulist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                     read['state']='disabled'
-                    root.unbind('</>')
+                    root.unbind('<\>')
                     thyme['state']='disabled'
                     timenter['state']='disabled'
                     buzzer['state']='disabled'
@@ -586,7 +598,7 @@ def qscreen(tuorbon,timeint):
                 if bonnum>=len(bonlist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                     read['state']='disabled'
-                    root.unbind('</>')
+                    root.unbind('<\>')
                     thyme['state']='disabled'
                     timenter['state']='disabled'
                     buzzer['state']='disabled'
@@ -604,7 +616,7 @@ def qscreen(tuorbon,timeint):
                     if tunum>=len(tulist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                         read['state']='disabled'
-                        root.unbind('</>')
+                        root.unbind('<\>')
                         thyme['state']='disabled'
                         timenter['state']='disabled'
                         buzzer['state']='disabled'
@@ -623,7 +635,7 @@ def qscreen(tuorbon,timeint):
                     if bonnum>=len(bonlist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                         read['state']='disabled'
-                        root.unbind('</>')
+                        root.unbind('<\>')
                         thyme['state']='disabled'
                         timenter['state']='disabled'
                         buzzer['state']='disabled'
@@ -634,8 +646,8 @@ def qscreen(tuorbon,timeint):
                         return
                     answerline.focus_set()
                     read_bonus(qframe,qcanvas,qtext,thyme)
-    read=tk.Button(controlframe,text="Next/Skip [/]",command=readq)
-    root.bind('</>', lambda event: readq())
+    read=tk.Button(controlframe,text="Next/Skip [\]",command=readq)
+    root.bind('<\>', lambda event: readq())
     read.grid(row=0,column=0)
     if tuorbon==0:
         tuct.grid(row=0,column=0)
