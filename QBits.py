@@ -8,7 +8,7 @@ cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,
 buzzed,reading,dead,ansalrgiven,qskipped,qfromreader=False,False,False,False,False,False
 ptn,bagels=[0,0,0],[0,0,0,0]
 tu,bon,tupts,bpts,tunum,bonnum,subbonnum,pm,curwd,curbpts,tbrn=0,0,0,0,-1,-1,0,0,0,0,0
-tulist,tualist,tufalist,tustatus,bonlist,bonalist,bonfalist,bonstatus,subbonstatus=[],[],[],[],[],[],[],[],[]
+tulist,tualist,tufalist,tustatus,tuwd,bonlist,bonalist,bonfalist,bonstatus,subbonstatus=[],[],[],[],[],[],[],[],[],[]
 class ToolTip(object):
     def __init__(self, widget):
         self.widget = widget
@@ -72,9 +72,20 @@ def gencard():
         tstr+="\n"
         for i in range(len(tulist)):
             tstr+="\nTOSSUP #%s"%(i+1)
-            tstr+="\nQUESTION: %s"%tulist[i]
-            tstr+="\nANSWER: %s"%tualist[i]
-            tstr+="\nSCORE: %s"%(tustatus[i])
+            if tustatus[i]!='skipped':
+                wlist=tulist[i].split()
+                for j in range(len(wlist)):
+                    if j==(tuwd[i]-1):
+                        wlist[j]+=" 🔔"
+                    if wlist[j].find("(*)")>=0:
+                        wlist.pop(j)
+                        wlist[j-1]+=" (*)"
+                        break
+                tstr+="\nQUESTION: %s"%' '.join(wlist)
+                tstr+="\nANSWER: %s"%tualist[i]
+                tstr+="\nSCORE: %s"%(tustatus[i])
+            else:
+                tstr+='\n[skipped]'
             tstr+="\n"
         s+=tstr
     if len(tulist)!=0 and len(bonlist)!=0:
@@ -90,10 +101,13 @@ def gencard():
         bstr+="\n"
         for i in range(len(bonlist)):
             bstr+="\nBONUS #%s"%(i+1)
-            for j in range(len(bonlist[i])):
-                bstr+="\nQUESTION: %s"%bonlist[i][j]
-                bstr+="\nANSWER: %s"%bonalist[i][j]
-                bstr+="\nSCORE: %s"%(bonstatus[i][j] if bonstatus[i]!="skipped" else 'skipped')
+            if bonstatus[i]!='skipped':
+                for j in range(len(bonlist[i])):
+                    bstr+="\nQUESTION: %s"%bonlist[i][j]
+                    bstr+="\nANSWER: %s"%bonalist[i][j]
+                    bstr+="\nSCORE: %s"%bonstatus[i][j]
+            else:
+                bstr+='\n[skipped]'
             bstr+="\n"
         s+=bstr
     if len(tulist)!=0 or len(bonlist)!=0:
@@ -105,23 +119,27 @@ def gencard():
             d+=str(i)
         with open("stats-%s.txt"%d,'w',encoding='utf-8') as f:
             f.write(s)
-def leaveforreal():
-    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum,qfromreader
+def leavehomescreen():
+    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum
+    if messagebox.askyesno("Leave?", "Do you want to quit this reader? (Press y/n)"):
+        gencard()
+        sys.exit()
+def leavereader():
+    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum
     tulist=tulist[:tunum+1]
     tualist=tualist[:tunum+1]
     tufalist=tufalist[:tunum+1]
     bonlist=bonlist[:bonnum+1]
     bonalist=bonalist[:bonnum+1]
     bonfalist=bonfalist[:bonnum+1]
-    if qfromreader:
-        if reading or (not reading and not dead and not ansalrgiven):
-            if tbrn==0:
-                tustatus.append('skipped')
-                tunum+=1
-            else:
-                bonstatus.append('skipped')
-                bonnum+=1
-                subbonstatus=[]
+    if reading or (not reading and not dead and not ansalrgiven):
+        if tbrn==0:
+            tustatus.append('skipped')
+            tunum+=1
+        else:
+            bonstatus.append('skipped')
+            bonnum+=1
+            subbonstatus=[]
     if messagebox.askyesno("Leave?", "Do you want to quit this reader? (Press y/n)"):
         gencard()
         sys.exit()
@@ -247,9 +265,9 @@ def setup():
     contr=tk.Button(fram4,text = 'Controls')
     sumbit=tk.Button(fram4,text = 'Go [Enter]', command = submit)
     CreateToolTip(contr, text = """Keybinds:\n[\] → [Next/Skip]\n[Space] → [Buzz]\n[Enter] → [Enter]\n[Escape] → [Back]\n[Ctrl+W] → [Leave]\n\nWhen the question starts, you will be able to live-adjust the time interval between words. \nDuring bonuses, the buzzer button should be disabled to prevent accidental buzzing during \nthem. You should be able to see your stats at the top of the window. """)
-    quibt=tk.Button(fram4,text = 'Quit [Esc]', command = leaveforreal)
+    quibt=tk.Button(fram4,text = 'Quit [Esc]', command = leavehomescreen)
     root.bind('<Return>',lambda event:submit())
-    root.bind('<Escape>',lambda event:leaveforreal())
+    root.bind('<Escape>',lambda event:leavehomescreen())
     tuorbon.grid(row=0,column=0, sticky="e")
     tu.grid(row=0,column=1, sticky="w")
     bon.grid(row=0,column=2, sticky="w")
@@ -317,7 +335,7 @@ def qscreen(tuorbon,timeint):
     controlframe=tk.Frame(bframe)
     controlframe.grid(row=0,column=0)
     qbt=tk.Button(topf,text='Back [Esc]',command=backtohomescreen)
-    lbt=tk.Button(topf,text='Leave [Ctrl+W]',command=leaveforreal)
+    lbt=tk.Button(topf,text='Leave [Ctrl+W]',command=leavereader)
     buzzed=False
     tuct=tk.Label(statframe,text='Tossups: %s'%(tu))
     tossuppts=tk.Label(statframe,text='Tossup Points: %s'%(tupts))
@@ -344,7 +362,7 @@ def qscreen(tuorbon,timeint):
         answerline.focus_set()
         timeoutctr=root.after(8000,checkanswer)
     def checkanswer():
-        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn,tustatus,bonstatus,subbonstatus
+        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn,tustatus,bonstatus,subbonstatus,tuwd
         if not ansalrgiven and not dead:
             root.unbind("<Return>")
             if timeoutctr:
@@ -396,6 +414,7 @@ def qscreen(tuorbon,timeint):
                                 tupts-=0
                                 tustatus.append(0)
                     tu+=1
+                    tuwd.append(curwd)
                     qcanvas.itemconfigure(qtext,text=tulist[tunum]+'\n\n'+tualist[tunum])
                     answerline['state']='disabled'
                     enterans['state']='disabled'
@@ -467,7 +486,7 @@ def qscreen(tuorbon,timeint):
     thyme.grid(row=0,column=2)
     def readq():
         global reading,buzzed,tunum,dead,ansalrgiven,qskipped,bonnum,subbonnum,curbpts,tustatus,bonstatus,subbonstatus
-        if not reading and not dead:
+        if dead or not reading:
             reading=True
             buzzed=False
             dead=False
@@ -673,7 +692,7 @@ def qscreen(tuorbon,timeint):
     qbt.grid(row=0,column=1,padx=(5,5))
     lbt.grid(row=0,column=2)
     root.bind('<Escape>',lambda event:backtohomescreen())
-    root.bind('<Control-w>',lambda event:leaveforreal())
+    root.bind('<Control-w>',lambda event:leavereader())
     root.focus_force()
     root.mainloop()
 def prompt(gans,aans):
@@ -873,3 +892,4 @@ if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
         tbrn=0
     fetchqs(cc,sscc,dd,ttoouurr,ttbb)
     qscreen(ttbb,tthhyymmee)
+#fix skipping on bonuses
