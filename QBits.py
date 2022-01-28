@@ -5,7 +5,7 @@ sssssccccc={"Current Events Subcategories":["American Current Events", "Other Cu
 ddddd=list(range(1,10))
 tttttooooouuuuurrrrr,tourids=dict(),dict()
 cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,root,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,timeoutctr,endctr,qctr,qframe=None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
-buzzed,reading,dead,ansalrgiven,qskipped,qfromreader=False,False,False,False,False,False
+buzzed,reading,dead,ansalrgiven,qskipped,qfromreader=False,False,True,False,False,False
 ptn,bagels=[0,0,0],[0,0,0,0]
 tu,bon,tupts,bpts,tunum,bonnum,subbonnum,pm,curwd,curbpts,tbrn=0,0,0,0,-1,-1,0,0,0,0,0
 tulist,tualist,tufalist,tustatus,tuwd,bonlist,bonalist,bonfalist,bonstatus,subbonstatus=[],[],[],[],[],[],[],[],[],[]
@@ -75,12 +75,12 @@ def gencard():
             if tustatus[i]!='skipped':
                 wlist=tulist[i].split()
                 for j in range(len(wlist)):
-                    if j==(tuwd[i]-1):
-                        wlist[j]+=" 🔔"
                     if wlist[j].find("(*)")>=0:
                         wlist.pop(j)
                         wlist[j-1]+=" (*)"
                         break
+                if tuwd[i]!=-1:
+                    wlist[tuwd[i]-1]+=" 🔔"
                 tstr+="\nQUESTION: %s"%' '.join(wlist)
                 tstr+="\nANSWER: %s"%tualist[i]
                 tstr+="\nSCORE: %s"%(tustatus[i])
@@ -230,7 +230,10 @@ def setup():
     times=tk.IntVar()
     timenter=tk.Entry(fram2,width=3,textvariable=times,)
     thyme = tk.Scale(fram2, from_=0, to=500, orient=tk.HORIZONTAL, length=400, tickinterval=50, variable=times)
-    thyme.set(250)
+    if tthhyymmee:
+        thyme.set(tthhyymmee)
+    else:    
+        thyme.set(250)
     timeex=tk.Button(fram2, text='❔')
     timeo.grid(row=0,column=0, sticky="e")
     timenter.grid(row=0,column=1)
@@ -240,6 +243,8 @@ def setup():
     fram3=tk.Frame(root)
     fram3.grid(row=2,column=0)
     tubon=tk.IntVar()
+    if ttbb:
+        tubon.set(ttbb)
     tuorbon=tk.Label(fram3, text = 'What kind of questions do you want? ', font=('calibri',10, 'bold'))
     tu=tk.Radiobutton(fram3, text='Tossups only', variable=tubon, value=0)
     bon=tk.Radiobutton(fram3, text='Bonuses only', variable=tubon, value=1)
@@ -302,7 +307,7 @@ def backtohomescreen():
     if timeoutctr:
         root.after_cancel(timeoutctr)
     root.destroy()
-    buzzed,reading,dead,ansalrgiven,qskipped=False,False,False,False,False
+    buzzed,reading,dead,ansalrgiven,qskipped=False,False,True,False,False
     pm,curwd,curbpts=0,0,0
     subbonnum=-1
     setup()
@@ -485,8 +490,8 @@ def qscreen(tuorbon,timeint):
     timenter.grid(row=0,column=1)
     thyme.grid(row=0,column=2)
     def readq():
-        global reading,buzzed,tunum,dead,ansalrgiven,qskipped,bonnum,subbonnum,curbpts,tustatus,bonstatus,subbonstatus
-        if dead or not reading:
+        global reading,buzzed,tunum,dead,ansalrgiven,qskipped,bonnum,subbonnum,curbpts,tustatus,bonstatus,subbonstatus,tuwd
+        if dead or ansalrgiven:
             reading=True
             buzzed=False
             dead=False
@@ -593,6 +598,7 @@ def qscreen(tuorbon,timeint):
                 root.after_cancel(timeoutctr)
             qskipped=False
             if tuorbon==0:
+                tuwd.append(-1)
                 tustatus.append('skipped')
                 tunum+=1
                 if tunum>=len(tulist):
@@ -630,6 +636,7 @@ def qscreen(tuorbon,timeint):
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
                 if tbrn==0:
+                    tuwd.append(-1)
                     tustatus.append('skipped')
                     tunum+=1
                     if tunum>=len(tulist):
@@ -725,8 +732,9 @@ def close_enough(given,htmlans,normalans):
             return True
     return False
 def check_if_buzz_at_eotu():
-    global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,reading
+    global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,reading,tuwd
     if reading==False and buzzed==False:
+        tuwd.append(-1)
         dead=True
         tustatus.append(0)
         tu+=1
@@ -892,3 +900,4 @@ if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
         tbrn=0
     fetchqs(cc,sscc,dd,ttoouurr,ttbb)
     qscreen(ttbb,tthhyymmee)
+#add ctrl w as keybind for home screen
