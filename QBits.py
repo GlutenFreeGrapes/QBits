@@ -74,13 +74,30 @@ def gencard():
             tstr+="\nTOSSUP #%s"%(i+1)
             if tustatus[i]!='skipped':
                 wlist=tulist[i].split()
-                for j in range(len(wlist)):
-                    if wlist[j].find("(*)")>=0:
-                        wlist.pop(j)
-                        wlist[j-1]+=" (*)"
-                        break
+                for k in range(len(wlist)):
+                    j=wlist[k].find("(*)")
+                    if j!=-1:
+                        if wlist[k]=="(*)":
+                            wlist.pop(k)
+                            wlist[k-1]=wlist[k-1]+" (*)"
+                            break
+                        elif j==(len(wlist[k])-3):
+                            wlist[k]=wlist[k].replace("(*)"," (*)")
+                            break
+                        elif j==0:
+                            wlist[k]=wlist[k][3:]
+                            wlist[k-1]=wlist[k-1]+" (*)"
+                            break
+                        elif j>=0:
+                            n=wlist[k][j+3:]
+                            wlist[k]=wlist[k][:j]+" (*)"
+                            wlist.insert(k+1,n)
+                            break
                 if tuwd[i]!=-1:
-                    wlist[tuwd[i]-1]+=" 🔔"
+                    if wlist[tuwd[i]-1].find("(*)")<0:
+                        wlist[tuwd[i]-1]+=" 🔔"
+                    else:
+                        wlist[tuwd[i]-1]=wlist[tuwd[i]-1][:len(wlist[tuwd[i]-1])-3]+" 🔔 (*)"
                 tstr+="\nQUESTION: %s"%' '.join(wlist)
                 tstr+="\nANSWER: %s"%tualist[i]
                 tstr+="\nSCORE: %s"%(tustatus[i])
@@ -125,16 +142,17 @@ def leavehomescreen():
         gencard()
         sys.exit()
 def leavereader():
-    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum
+    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum,tuwd
     tulist=tulist[:tunum+1]
     tualist=tualist[:tunum+1]
     tufalist=tufalist[:tunum+1]
     bonlist=bonlist[:bonnum+1]
     bonalist=bonalist[:bonnum+1]
     bonfalist=bonfalist[:bonnum+1]
-    if reading or (not reading and not dead and not ansalrgiven):
+    if reading or not (dead or ansalrgiven):
         if tbrn==0:
             tustatus.append('skipped')
+            tuwd.append(-1)
             tunum+=1
         else:
             bonstatus.append('skipped')
@@ -285,7 +303,7 @@ def setup():
     quibt.grid(row=0,column=3,padx=(10,0),pady=(0,5))
     root.mainloop()
 def backtohomescreen():
-    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum
+    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum,tuwd
     tulist=tulist[:tunum+1]
     tualist=tualist[:tunum+1]
     tufalist=tufalist[:tunum+1]
@@ -295,6 +313,7 @@ def backtohomescreen():
     if reading or (not reading and not dead and not ansalrgiven):
         if tbrn==0:
             tustatus.append('skipped')
+            tuwd.append(-1)
             tunum+=1
         else:
             bonstatus.append('skipped')
@@ -332,7 +351,7 @@ def qscreen(tuorbon,timeint):
     statframe.grid(row=0,column=0)
     qframe=tk.Frame(root)
     qframe.grid(row=1,column=0)
-    qcanvas=tk.Canvas(qframe,width=600,height=400,background="white")
+    qcanvas=tk.Canvas(qframe,width=650,height=450,background="white")
     qcanvas.pack()
     qtext=qcanvas.create_text(int(qcanvas['width'])/2,int(qcanvas['height'])/2,text='Press [Next/Skip] to start', width=qcanvas['width'], fill="black",font=("times new roman", 13))
     bframe=tk.LabelFrame(root, text='Controls')
@@ -509,6 +528,8 @@ def qscreen(tuorbon,timeint):
             if tuorbon==0:
                 if tunum>=len(tulist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
+                    reading=False
+                    dead=True
                     read['state']='disabled'
                     root.unbind('<\>')
                     thyme['state']='disabled'
@@ -527,6 +548,8 @@ def qscreen(tuorbon,timeint):
             elif tuorbon==1:
                 if bonnum>=len(bonlist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
+                    reading=False
+                    dead=True
                     read['state']='disabled'
                     root.unbind('<\>')
                     thyme['state']='disabled'
@@ -550,6 +573,8 @@ def qscreen(tuorbon,timeint):
                 if tbrn==0:
                     if tunum>=len(tulist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
+                        reading=False
+                        dead=True
                         read['state']='disabled'
                         root.unbind('<\>')
                         thyme['state']='disabled'
@@ -568,6 +593,8 @@ def qscreen(tuorbon,timeint):
                 else:
                     if bonnum>=len(bonlist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
+                        reading=False
+                        dead=True
                         read['state']='disabled'
                         root.unbind('<\>')
                         thyme['state']='disabled'
@@ -603,6 +630,8 @@ def qscreen(tuorbon,timeint):
                 tunum+=1
                 if tunum>=len(tulist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
+                    reading=False
+                    dead=True
                     read['state']='disabled'
                     root.unbind('<\>')
                     thyme['state']='disabled'
@@ -622,6 +651,8 @@ def qscreen(tuorbon,timeint):
                 curbpts=0
                 if bonnum>=len(bonlist):
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
+                    reading=False
+                    dead=True
                     read['state']='disabled'
                     root.unbind('<\>')
                     thyme['state']='disabled'
@@ -641,6 +672,8 @@ def qscreen(tuorbon,timeint):
                     tunum+=1
                     if tunum>=len(tulist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
+                        reading=False
+                        dead=True
                         read['state']='disabled'
                         root.unbind('<\>')
                         thyme['state']='disabled'
@@ -660,6 +693,8 @@ def qscreen(tuorbon,timeint):
                     curbpts=0
                     if bonnum>=len(bonlist):
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
+                        reading=False
+                        dead=True
                         read['state']='disabled'
                         root.unbind('<\>')
                         thyme['state']='disabled'
@@ -776,10 +811,29 @@ def read_tossup(window,canvas,question_txt,timeint):
     powermark=current_q.find("(*)")
     words=current_q.split()
     if powermark>-1:
-        index=current_q[:powermark].count(" ")
-        pm=index
-        words.pop(index)
-        words[index-1]+=" (*)"
+        for i in range(len(words)):
+            j=words[i].find("(*)")
+            if j!=-1:
+                if words[i]=="(*)":
+                    words.pop(i)
+                    pm=i-1
+                    words[i-1]=words[i-1]+" (*)"
+                    break
+                elif j==(len(words[i])-3):
+                    pm=i
+                    words[i]=words[i].replace("(*)"," (*)")
+                    break
+                elif j==0:
+                    pm=i-1
+                    words[i]=words[i][3:]
+                    words[i-1]=words[i-1]+" (*)"
+                    break
+                elif j>=0:
+                    pm=i
+                    n=words[i][j+3:]
+                    words[i]=words[i][:j]+" (*)"
+                    words.insert(i+1,n)
+                    break
     else:
         pm=-1
     itertu(words, 0, window,canvas,question_txt,timeint)
@@ -822,6 +876,12 @@ def iterbon(allread, words, i, window,canvas,question_txt,timeint):
         canvas.itemconfigure(question_txt, text=allread+' '.join(words[:i]))
         i += 1
         qctr = window.after(timeint.get(), lambda: iterbon(allread,words, i,window,canvas,question_txt,timeint))
+def stripemsub(s):
+    s=s.replace("<em>","")
+    s=s.replace("</em>","")
+    s=s.replace("<sub>","")
+    s=s.replace("</sub>","")
+    return s
 def fetchqs(cats,subcats,diffs,tours,tuorbon):
     global tulist,tualist,tufalist,bonlist,bonalist,bonfalist
     catids={"Current Events":26, "Fine Arts":21, "Geography":20, "History":18, "Literature":15, "Mythology":14, "Philosophy":25, "Religion":19, "Science":17, "Social Science":22, "Trash":16}
@@ -843,16 +903,18 @@ def fetchqs(cats,subcats,diffs,tours,tuorbon):
         for i in data["data"]["tossups"]:
             if i["text"]!="[missing]" and i["answer"]!="[missing]" and i["tournament_id"]:
                 if ((i["category_id"] in clist or i["subcategory_id"] in sclist) and (i["tournament"]["difficulty_num"] in dlist or i["tournament_id"] in tlist)) and i["text"] not in tulist:
-                    t.append(i["text"])
+                    z=i["text"]
+                    z=stripemsub(z)
+                    t.append(z)
                     a=i["answer"]
+                    a=stripemsub(a)
                     if a.find("&lt")>=0:
                         a=a[:a.find("&lt")]
                     elif a.find("<")>=0:
                         a=a[:a.find("<")]
                     ttt.append(a)
                     c=i["formatted_answer"]
-                    c.replace("<em>","")
-                    c.replace("</em>","")
+                    c=stripemsub(c)
                     if c.find("&lt")>=0:
                         c=c[:c.find("&lt")]
                     tt.append(c)
@@ -869,17 +931,20 @@ def fetchqs(cats,subcats,diffs,tours,tuorbon):
                 if((i["category_id"] in clist or i["subcategory_id"] in sclist) and (i["tournament"]["difficulty_num"] in dlist or i["tournament_id"] in tlist))and i["texts"] not in bonlist:
                     b=i["texts"]
                     b[0]=i["leadin"]+"\n"+b[0]
+                    for n,j in enumerate(b):
+                        b[n]=stripemsub(j)
                     bbb.append(b)
                     a=i["answers"]
                     for n,j in enumerate(a):
-                        if j.find("&lt")>=0:
-                            a[n]=j[:j.find("&lt")]
+                        k=stripemsub(j)
+                        if k.find("&lt")>=0:
+                            a[n]=k[:k.find("&lt")]
                         elif j.find("<")>=0:
-                            a[n]=j[:j.find("<")]
+                            a[n]=k[:k.find("<")]
                     bbbbb.append(a)
                     c=i["formatted_answers"]
                     for n,j in enumerate(c):
-                        k=j.replace("<em>","").replace("</em>","")
+                        k=stripemsub(j)
                         if k.find("&lt")>=0:
                             k=k[:k.find("&lt")]
                         c[n]=k
