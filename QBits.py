@@ -61,6 +61,9 @@ def handback(c,sc,d,tour,tb,tint):
     return
 def gencard():
     s=''
+    print(len(tulist))
+    print(tustatus)
+    print(bonstatus)
     if len(tulist)!=0:
         tstr='TOSSUPS\n'
         tstr+="\nTOSSUPS: %s"%len(tulist)
@@ -248,7 +251,7 @@ def setup():
     times=tk.IntVar()
     timenter=tk.Entry(fram2,width=3,textvariable=times,)
     thyme = tk.Scale(fram2, from_=0, to=500, orient=tk.HORIZONTAL, length=400, tickinterval=50, variable=times)
-    if tthhyymmee:
+    if type(tthhyymmee)==int:
         thyme.set(tthhyymmee)
     else:    
         thyme.set(250)
@@ -767,8 +770,10 @@ def close_enough(given,htmlans,normalans):
             return True
     return False
 def check_if_buzz_at_eotu():
-    global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,reading,tuwd
+    global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,reading,tuwd,tbrn
     if reading==False and buzzed==False:
+        if ttbb==2:
+            tbrn=1
         tuwd.append(-1)
         dead=True
         tustatus.append(0)
@@ -780,7 +785,7 @@ def check_if_buzz_at_eotu():
         root.unbind("<space>")
         root.update()
 def check_if_buzz_at_eobon():
-    global dead,bon,bonct,bonuspts,ppb,tttb,curbpts,answerline,reading
+    global dead,bon,bonct,bonuspts,ppb,tttb,curbpts,answerline,reading,tbrn,bagels,bpts,subbonstatus,bonstatus
     ans=is_this_correct.get()
     if ans!="":
         answerline.delete(0,len(ans))
@@ -796,6 +801,19 @@ def check_if_buzz_at_eobon():
                 subbonstatus.append(0)
     if reading==False and ansalrgiven==False:
         dead=True
+        subbonstatus.append(0)
+        if ttbb==2 and subbonnum==2:
+            tbrn=0
+        if subbonnum==2:
+            bonstatus.append(subbonstatus)
+            subbonstatus=[]
+            bon+=1
+            bagels[(30-curbpts)//10]+=1
+            bpts+=curbpts
+            bonct['text']='Bonuses: %s'%(bon)
+            bonuspts['text']='Bonus Points: %s'%(bpts)
+            ppb['text']='PPB: %s'%(0.0 if bon==0 else round(bpts/bon,2))
+            tttb['text']='30s/20s/10s/0s: %s'%('/'.join(str(i) for i in bagels))
         answerline['state']='disabled'
         enterans['state']='disabled'
         root.unbind("<Return>")
@@ -966,3 +984,4 @@ if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
     fetchqs(cc,sscc,dd,ttoouurr,ttbb)
     qscreen(ttbb,tthhyymmee)
 #add ctrl w as keybind for home screen
+#make it so that user getting tu wrong when in "tossups and bonuses" it goes to another tossup instead of the bonus
