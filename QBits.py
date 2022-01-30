@@ -61,9 +61,6 @@ def handback(c,sc,d,tour,tb,tint):
     return
 def gencard():
     s=''
-    print(len(tulist))
-    print(tustatus)
-    print(bonstatus)
     if len(tulist)!=0:
         tstr='TOSSUPS\n'
         tstr+="\nTOSSUPS: %s"%len(tulist)
@@ -291,9 +288,10 @@ def setup():
     contr=tk.Button(fram4,text = 'Controls')
     sumbit=tk.Button(fram4,text = 'Go [Enter]', command = submit)
     CreateToolTip(contr, text = """Keybinds:\n[\] → [Next/Skip]\n[Space] → [Buzz]\n[Enter] → [Enter]\n[Escape] → [Back]\n[Ctrl+W] → [Leave]\n\nWhen the question starts, you will be able to live-adjust the time interval between words. \nDuring bonuses, the buzzer button should be disabled to prevent accidental buzzing during \nthem. You should be able to see your stats at the top of the window. """)
-    quibt=tk.Button(fram4,text = 'Quit [Esc]', command = leavehomescreen)
+    quibt=tk.Button(fram4,text = 'Quit [Esc/Ctrl+W]', command = leavehomescreen)
     root.bind('<Return>',lambda event:submit())
     root.bind('<Escape>',lambda event:leavehomescreen())
+    root.bind('<Control-w>',lambda event:leavehomescreen())
     tuorbon.grid(row=0,column=0, sticky="e")
     tu.grid(row=0,column=1, sticky="w")
     bon.grid(row=0,column=2, sticky="w")
@@ -412,6 +410,8 @@ def qscreen(tuorbon,timeint):
                             tupts+=10
                             ptn[1]+=1
                             tustatus.append(10)
+                        if tuorbon==2:
+                            tbrn=1
                     else:
                         if reading:
                             if prompt(givenans,actualans):
@@ -423,6 +423,8 @@ def qscreen(tuorbon,timeint):
                                     tupts+=10
                                     ptn[1]+=1
                                     tustatus.append(10)
+                                if tuorbon==2:
+                                    tbrn=1
                             else:
                                 tupts-=5
                                 ptn[2]+=1
@@ -437,6 +439,8 @@ def qscreen(tuorbon,timeint):
                                     tupts+=10
                                     ptn[1]+=1
                                     tustatus.append(10)
+                                if tuorbon==2:
+                                    tbrn=1
                             else:
                                 tupts-=0
                                 tustatus.append(0)
@@ -453,8 +457,6 @@ def qscreen(tuorbon,timeint):
                     tossuppts['text']='Tossup Points: %s'%(tupts)
                     ppg['text']='PPTUH: %s'%(0.0 if tu==0 else round(tupts/tu,2))
                     ptnct['text']='Powers/10s/Negs: %s'%('/'.join(str(i) for i in ptn))
-                    if tuorbon==2:
-                        tbrn=1-tbrn
                     root.update()
             else:
                 answerline['state']='disabled'
@@ -773,7 +775,7 @@ def check_if_buzz_at_eotu():
     global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,reading,tuwd,tbrn
     if reading==False and buzzed==False:
         if ttbb==2:
-            tbrn=1
+            tbrn=0
         tuwd.append(-1)
         dead=True
         tustatus.append(0)
@@ -983,5 +985,3 @@ if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
         tbrn=0
     fetchqs(cc,sscc,dd,ttoouurr,ttbb)
     qscreen(ttbb,tthhyymmee)
-#add ctrl w as keybind for home screen
-#make it so that user getting tu wrong when in "tossups and bonuses" it goes to another tossup instead of the bonus

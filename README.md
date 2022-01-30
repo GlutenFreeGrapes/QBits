@@ -5,7 +5,7 @@ An all-in-one quizbowl question reader.
 ### Select Questions Window
 [`Enter`] → [Go]
 
-[`Esc`] → [Quit]
+[`Esc`] or [`Ctrl+W`] → [Quit]
 
 ### Question Window
 [`\`] → [Next/Skip]
