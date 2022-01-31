@@ -143,22 +143,22 @@ def leavehomescreen():
         sys.exit()
 def leavereader():
     global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum,tuwd
-    tulist=tulist[:tunum+1]
-    tualist=tualist[:tunum+1]
-    tufalist=tufalist[:tunum+1]
-    bonlist=bonlist[:bonnum+1]
-    bonalist=bonalist[:bonnum+1]
-    bonfalist=bonfalist[:bonnum+1]
-    if reading or not (dead or ansalrgiven):
-        if tbrn==0:
-            tustatus.append('skipped')
-            tuwd.append(-1)
-            tunum+=1
-        else:
-            bonstatus.append('skipped')
-            bonnum+=1
-            subbonstatus=[]
     if messagebox.askyesno("Leave?", "Do you want to quit this reader? (Press y/n)"):
+        tulist=tulist[:tunum+1]
+        tualist=tualist[:tunum+1]
+        tufalist=tufalist[:tunum+1]
+        bonlist=bonlist[:bonnum+1]
+        bonalist=bonalist[:bonnum+1]
+        bonfalist=bonfalist[:bonnum+1]
+        if reading or not (dead or ansalrgiven):
+            if tbrn==0:
+                tustatus.append('skipped')
+                tuwd.append(-1)
+                tunum+=1
+            else:
+                bonstatus.append('skipped')
+                bonnum+=1
+                subbonstatus=[]
         gencard()
         sys.exit()
 def setup():
