@@ -3,12 +3,13 @@ from tkinter import messagebox
 ccccc=["Current Events", "Fine Arts", "Geography", "History", "Literature", "Mythology", "Philosophy", "Religion", "Science", "Social Science", "Trash"]
 sssssccccc={"Current Events Subcategories":["American Current Events", "Other Current Events"], "Fine Arts Subcategories":["American Fine Arts", "Audiovisual Fine Arts", "Auditory Fine Arts", "British Fine Arts", "European Fine Arts", "Opera", "Visual Fine Arts", "World Fine Arts", "Other Fine Arts"], "Geography Subcategories":["American Geography", "World Geography"], "History Subcategories":["American History", "British History", "Classical History", "European History", "World History", "Other History"], "Literature Subcategories":["American Literature", "British Literature", "Classical Literature", "European Literature", "World Literature", "Other Literature"], "Mythology Subcategories":["American Mythology", "Chinese Mythology", "Egyptian Mythology", "Greco-Roman Mythology", "Indian Mythology", "Japanese Mythology", "Norse Mythology", "Other East Asian Mythology", "Other Mythology"], "Philosophy Subcategories":["American Philosophy", "Classical Philosophy", "East Asian Philosophy", "European Philosophy", "Other Philosophy"], "Religion Subcategories":["American Religion", "Christianity", "East Asian Religion", "Islam", "Judaism", "Other Religion"], "Science Subcategories":["American Science", "Biology", "Chemistry", "Computer Science", "Math", "Physics", "World Science", "Other Science"], "Social Science Subcategories":["American Social Science", "Anthropology", "Economics", "Linguistics", "Political Science", "Psychology", "Sociology", "Other Social Science"], "Trash Subcategories":["American Trash", "Movies", "Music", "Sports", "Television", "Video Games", "Other Trash"]}
 ddddd=list(range(1,10))
+diffdict={1:"Middle School",2:"Easy High School",3:"Regular High School",4:"Hard High School",5:"High School Nationals",6:"Easy College",7:"Regular College",8:"Hard College",9:"Open"}
 tttttooooouuuuurrrrr,tourids=dict(),dict()
-cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,root,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,timeoutctr,endctr,qctr,qframe=None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
+cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,root,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,timeoutctr,endctr,qctr,qframe,data=None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
 buzzed,reading,dead,ansalrgiven,qskipped,qfromreader=False,False,True,False,False,False
 ptn,bagels=[0,0,0],[0,0,0,0]
 tu,bon,tupts,bpts,tunum,bonnum,subbonnum,pm,curwd,curbpts,tbrn=0,0,0,0,-1,-1,0,0,0,0,0
-tulist,tualist,tufalist,tustatus,tuwd,bonlist,bonalist,bonfalist,bonstatus,subbonstatus=[],[],[],[],[],[],[],[],[],[]
+tulist,tualist,tufalist,tustatus,tuwd,bonlist,bonalist,bonfalist,bonstatus,subbonstatus,tutourlist,bontourlist=[],[],[],[],[],[],[],[],[],[],[],[]
 class ToolTip(object):
     def __init__(self, widget):
         self.widget = widget
@@ -41,8 +42,8 @@ def CreateToolTip(widget, text):
     widget.bind('<Enter>', enter)
     widget.bind('<Leave>', leave)
 def settourlist():
-    global tourids,tttttooooouuuuurrrrr
-    with open('quizdb-20220122021550.json', 'r', encoding='utf-8') as f:
+    global tourids,tttttooooouuuuurrrrr,data
+    with open('qdbcompressed.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
     for i in ddddd:
         tttttooooouuuuurrrrr["Difficulty Level %s"%i]=set()
@@ -50,11 +51,22 @@ def settourlist():
         for i in j:
             if i["tournament_id"]:
                 if i["tournament"]["name"] not in tourids:
-                    tourids[i["tournament"]["name"]]=i["tournament_id"]
-                if i["tournament"]["difficulty_num"] in tttttooooouuuuurrrrr:
+                    tourids[i["tournament"]["name"]]=(i["tournament_id"],i["tournament"]["year"])
+                if "Difficulty Level %s"%i["tournament"]["difficulty_num"] in tttttooooouuuuurrrrr:
                     tttttooooouuuuurrrrr["Difficulty Level %s"%i["tournament"]["difficulty_num"]].add(i["tournament"]["name"])
                 else:
                     tttttooooouuuuurrrrr["Difficulty Level %s"%i["tournament"]["difficulty_num"]]={i["tournament"]["name"]}
+    for i in tttttooooouuuuurrrrr.keys():
+        dddddddddd=dict()
+        for j in tttttooooouuuuurrrrr[i]:
+            if tourids[j][1] in dddddddddd:
+                dddddddddd[tourids[j][1]].append(j)
+            else:
+                dddddddddd[tourids[j][1]]=[j]
+        llllllllll=list()
+        for j in sorted(dddddddddd.keys(),reverse=True):
+            llllllllll.extend(sorted(dddddddddd[j]))
+        tttttooooouuuuurrrrr[i]=llllllllll
 def handback(c,sc,d,tour,tb,tint):
     global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee
     cc,sscc,dd,ttoouurr,ttbb,tthhyymmee=c,sc,d,tour,tb,tint
@@ -98,6 +110,8 @@ def gencard():
                         wlist[tuwd[i]-1]+=" 🔔"
                     else:
                         wlist[tuwd[i]-1]=wlist[tuwd[i]-1][:len(wlist[tuwd[i]-1])-3]+" 🔔 (*)"
+                tstr+="\nTOURNAMENT: %s"%tutourlist[i][0]
+                tstr+="\nDIFFICULTY: %s (%s)"%(tutourlist[i][1],diffdict[tutourlist[i][1]])
                 tstr+="\nQUESTION: %s"%' '.join(wlist)
                 tstr+="\nANSWER: %s"%tualist[i]
                 tstr+="\nSCORE: %s"%(tustatus[i])
@@ -119,6 +133,8 @@ def gencard():
         for i in range(len(bonlist)):
             bstr+="\nBONUS #%s"%(i+1)
             if bonstatus[i]!='skipped':
+                bstr+="\nTOURNAMENT: %s"%bontourlist[i][0]
+                bstr+="\nDIFFICULTY: %s (%s)"%(bontourlist[i][1],diffdict[bontourlist[i][1]])
                 for j in range(len(bonlist[i])):
                     bstr+="\nQUESTION: %s"%bonlist[i][j]
                     bstr+="\nANSWER: %s"%bonalist[i][j]
@@ -142,14 +158,16 @@ def leavehomescreen():
         gencard()
         sys.exit()
 def leavereader():
-    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum,tuwd
+    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum,tuwd,tutourlist,bontourlist
     if messagebox.askyesno("Leave?", "Do you want to quit this reader? (Press y/n)"):
         tulist=tulist[:tunum+1]
         tualist=tualist[:tunum+1]
         tufalist=tufalist[:tunum+1]
+        tutourlist=tutourlist[:tunum+1]
         bonlist=bonlist[:bonnum+1]
         bonalist=bonalist[:bonnum+1]
         bonfalist=bonfalist[:bonnum+1]
+        bontourlist=tutourlist[:bonnum+1]
         if reading or not (dead or ansalrgiven):
             if tbrn==0:
                 tustatus.append('skipped')
@@ -304,13 +322,15 @@ def setup():
     quibt.grid(row=0,column=3,padx=(10,0),pady=(0,5))
     root.mainloop()
 def backtohomescreen():
-    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum,tuwd
+    global cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tufalist,tualist,bonalist,bonfalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,pm,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum,tuwd,tutourlist,bontourlist
     tulist=tulist[:tunum+1]
     tualist=tualist[:tunum+1]
     tufalist=tufalist[:tunum+1]
+    tutourlist=tutourlist[:tunum+1]
     bonlist=bonlist[:bonnum+1]
     bonalist=bonalist[:bonnum+1]
     bonfalist=bonfalist[:bonnum+1]
+    bontourlist=tutourlist[:bonnum+1]
     if reading or (not reading and not dead and not ansalrgiven):
         if tbrn==0:
             tustatus.append('skipped')
@@ -350,6 +370,10 @@ def qscreen(tuorbon,timeint):
     topf.grid(row=0,column=0)
     statframe=tk.LabelFrame(topf, text='Stats')
     statframe.grid(row=0,column=0)
+    pstatframe=tk.Frame(statframe)
+    pstatframe.grid(row=0,column=0)
+    tstatframe=tk.Frame(statframe)
+    tstatframe.grid(row=1,column=0)
     qframe=tk.Frame(root)
     qframe.grid(row=1,column=0)
     qcanvas=tk.Canvas(qframe,width=650,height=450,background="white")
@@ -362,14 +386,16 @@ def qscreen(tuorbon,timeint):
     qbt=tk.Button(topf,text='Back [Esc]',command=backtohomescreen)
     lbt=tk.Button(topf,text='Leave [Ctrl+W]',command=leavereader)
     buzzed=False
-    tuct=tk.Label(statframe,text='Tossups: %s'%(tu))
-    tossuppts=tk.Label(statframe,text='Tossup Points: %s'%(tupts))
-    ppg=tk.Label(statframe,text='PPTUH: %s'%(0.0 if tu==0 else round(tupts/tu,2)))
-    ptnct=tk.Label(statframe,text='Powers/10s/Negs: %s'%('/'.join(str(i) for i in ptn)))
-    bonct=tk.Label(statframe,text='Bonuses: %s'%(bon))
-    bonuspts=tk.Label(statframe,text='Bonus Points: %s'%(bpts))
-    ppb=tk.Label(statframe,text='PPB: %s'%(0.0 if bon==0 else round(bpts/bon,2)))
-    tttb=tk.Label(statframe,text='30s/20s/10s/0s: %s'%('/'.join(str(i) for i in bagels)))
+    tuct=tk.Label(pstatframe,text='Tossups: %s'%(tu))
+    tossuppts=tk.Label(pstatframe,text='Tossup Points: %s'%(tupts))
+    ppg=tk.Label(pstatframe,text='PPTUH: %s'%(0.0 if tu==0 else round(tupts/tu,2)))
+    ptnct=tk.Label(pstatframe,text='Powers/10s/Negs: %s'%('/'.join(str(i) for i in ptn)))
+    bonct=tk.Label(pstatframe,text='Bonuses: %s'%(bon))
+    bonuspts=tk.Label(pstatframe,text='Bonus Points: %s'%(bpts))
+    ppb=tk.Label(pstatframe,text='PPB: %s'%(0.0 if bon==0 else round(bpts/bon,2)))
+    tttb=tk.Label(pstatframe,text='30s/20s/10s/0s: %s'%('/'.join(str(i) for i in bagels)))
+    tourney=tk.Label(tstatframe,text='Tournament: ---')
+    difficul=tk.Label(tstatframe,text='Difficulty: - (---)')
     is_this_correct=tk.StringVar()
     def buzzin():
         global buzzed,timeoutctr,root,enterans
@@ -549,6 +575,8 @@ def qscreen(tuorbon,timeint):
                     buzzer['state']='normal'
                     root.bind("<space>", lambda event: buzzin())
                 qcanvas.itemconfigure(qtext, font=("times new roman", 13))
+                tourney['text']="Tournament: %s"%tutourlist[tunum][0]
+                difficul['text']="Difficulty: %s (%s)"%(tutourlist[tunum][1],diffdict[tutourlist[tunum][1]])
                 read_tossup(qframe,qcanvas,qtext,thyme)
             elif tuorbon==1:
                 if bonnum>=len(bonlist):
@@ -573,6 +601,8 @@ def qscreen(tuorbon,timeint):
                     root.bind("<Return>", lambda event: checkanswer())
                 qcanvas.itemconfigure(qtext, font=("times new roman", 13))
                 answerline.focus_set()
+                tourney['text']="Tournament: %s"%bontourlist[tunum][0]
+                difficul['text']="Difficulty: %s (%s)"%(bontourlist[tunum][1],diffdict[bontourlist[tunum][1]])
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
                 if tbrn==0:
@@ -594,6 +624,8 @@ def qscreen(tuorbon,timeint):
                         buzzer['state']='normal'
                         root.bind("<space>", lambda event: buzzin())
                     qcanvas.itemconfigure(qtext, font=("times new roman", 13))
+                    tourney['text']="Tournament: %s"%tutourlist[tunum][0]
+                    difficul['text']="Difficulty: %s (%s)"%(tutourlist[tunum][1],diffdict[tutourlist[tunum][1]])
                     read_tossup(qframe,qcanvas,qtext,thyme)
                 else:
                     if bonnum>=len(bonlist):
@@ -618,6 +650,8 @@ def qscreen(tuorbon,timeint):
                         root.bind("<Return>", lambda event: checkanswer())
                     qcanvas.itemconfigure(qtext, font=("times new roman", 13))
                     answerline.focus_set()
+                    tourney['text']="Tournament: %s"%bontourlist[tunum][0]
+                    difficul['text']="Difficulty: %s (%s)"%(bontourlist[tunum][1],diffdict[bontourlist[tunum][1]])
                     read_bonus(qframe,qcanvas,qtext,thyme)
         else:
             answerline.delete(0,len(is_this_correct.get()))
@@ -647,6 +681,8 @@ def qscreen(tuorbon,timeint):
                     enterans['state']='disabled'
                     root.unbind("<Return>")
                     return
+                tourney['text']="Tournament: %s"%tutourlist[tunum][0]
+                difficul['text']="Difficulty: %s (%s)"%(tutourlist[tunum][1],diffdict[tutourlist[tunum][1]])
                 read_tossup(qframe,qcanvas,qtext,thyme)
             elif tuorbon==1:
                 bonstatus.append('skipped')
@@ -669,6 +705,8 @@ def qscreen(tuorbon,timeint):
                     root.unbind("<Return>")
                     return
                 answerline.focus_set()
+                tourney['text']="Tournament: %s"%bontourlist[tunum][0]
+                difficul['text']="Difficulty: %s (%s)"%(bontourlist[tunum][1],diffdict[bontourlist[tunum][1]])
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
                 if tbrn==0:
@@ -689,6 +727,8 @@ def qscreen(tuorbon,timeint):
                         enterans['state']='disabled'
                         root.unbind("<Return>")
                         return
+                    tourney['text']="Tournament: %s"%tutourlist[tunum][0]
+                    difficul['text']="Difficulty: %s (%s)"%(tutourlist[tunum][1],diffdict[tutourlist[tunum][1]])
                     read_tossup(qframe,qcanvas,qtext,thyme)
                 else:
                     bonstatus.append('skipped')
@@ -711,10 +751,14 @@ def qscreen(tuorbon,timeint):
                         root.unbind("<Return>")
                         return
                     answerline.focus_set()
+                    tourney['text']="Tournament: %s"%bontourlist[tunum][0]
+                    difficul['text']="Difficulty: %s (%s)"%(bontourlist[tunum][1],diffdict[bontourlist[tunum][1]])
                     read_bonus(qframe,qcanvas,qtext,thyme)
     read=tk.Button(controlframe,text="Next/Skip [\]",command=readq)
     root.bind('<\>', lambda event: readq())
     read.grid(row=0,column=0)
+    tourney.grid(row=0,column=0)
+    difficul.grid(row=0,column=1)
     if tuorbon==0:
         tuct.grid(row=0,column=0)
         tossuppts.grid(row=0,column=1)
@@ -903,10 +947,10 @@ def stripemsub(s):
     s=s.replace("</sub>","")
     return s
 def fetchqs(cats,subcats,diffs,tours,tuorbon):
-    global tulist,tualist,tufalist,bonlist,bonalist,bonfalist
+    global tulist,tualist,tufalist,bonlist,bonalist,bonfalist,tutourlist,bontourlist
     catids={"Current Events":26, "Fine Arts":21, "Geography":20, "History":18, "Literature":15, "Mythology":14, "Philosophy":25, "Religion":19, "Science":17, "Social Science":22, "Trash":16}
     subcatids={'American Current Events':40, 'Other Current Events':42, 'American Fine Arts':35, 'Audiovisual Fine Arts':27, 'Auditory Fine Arts':8, 'British Fine Arts':45, 'European Fine Arts':50, 'Opera':77, 'Visual Fine Arts':2, 'World Fine Arts':43, 'Other Fine Arts':25, 'American Geography':38, 'World Geography':44, 'American History':13, 'British History':6, 'Classical History':16, 'European History':24, 'World History':20, 'Other History':28, 'American Literature':4, 'British Literature':22, 'Classical Literature':30, 'European Literature':1, 'World Literature':12, 'Other Literature':29, 'American Mythology':33, 'Chinese Mythology':47, 'Egyptian Mythology':65, 'Greco-Roman Mythology':58, 'Indian Mythology':46, 'Japanese Mythology':48, 'Norse Mythology':63, 'Other East Asian Mythology':49, 'Other Mythology':54, 'American Philosophy':39, 'Classical Philosophy':61, 'East Asian Philosophy':52, 'European Philosophy':66, 'Other Philosophy':74, 'American Religion':31, 'Christianity':57, 'East Asian Religion':51, 'Islam':68, 'Judaism':69, 'Other Religion':62, 'American Science':36, 'Biology':14, 'Chemistry':5, 'Computer Science':23, 'Math':26, 'Physics':18, 'World Science':37, 'Other Science':10, 'American Social Science':34, 'Anthropology':76, 'Economics':56, 'Linguistics':75, 'Political Science':64, 'Psychology':71, 'Sociology':73, 'Other Social Science':60, 'American Trash':32, 'Movies':72, 'Music':67, 'Sports':55, 'Television':70, 'Video Games':53, 'Other Trash':59}
-    t,tt,ttt,bbb,bbbb,bbbbb=[],[],[],[],[],[]
+    t,tt,ttt,tttt,bbb,bbbb,bbbbb,bbbbbb=[],[],[],[],[],[],[],[]
     clist=set()
     sclist=set()
     dlist=set(diffs)
@@ -916,9 +960,7 @@ def fetchqs(cats,subcats,diffs,tours,tuorbon):
     for i in subcats:
         sclist.add(subcatids[i])
     for i in tours:
-        tlist.add(tourids[i])
-    with open('quizdb-20220122021550.json', 'r', encoding='utf-8') as f:
-        data = json.load(f)
+        tlist.add(tourids[i][0])
     if tuorbon==0 or tuorbon==2:
         for i in data["data"]["tossups"]:
             if i["text"]!="[missing]" and i["answer"]!="[missing]" and i["tournament_id"]:
@@ -938,13 +980,15 @@ def fetchqs(cats,subcats,diffs,tours,tuorbon):
                     if c.find("&lt")>=0:
                         c=c[:c.find("&lt")]
                     tt.append(c)
+                    tttt.append((i["tournament"]["name"],i["tournament"]["difficulty_num"]))
         if len(t)>0:
-            tus=list(zip(t,tt,ttt))
+            tus=list(zip(t,tt,ttt,tttt))
             random.shuffle(tus)
-            t,tt,ttt=zip(*tus)
+            t,tt,ttt,tttt=zip(*tus)
             tulist.extend(list(t))
-            tufalist.extend(tt)
-            tualist.extend(ttt)
+            tufalist.extend(list(tt))
+            tualist.extend(list(ttt))
+            tutourlist.extend(list(tttt))
     if tuorbon==1 or tuorbon==2:
         for i in data["data"]["bonuses"]:
             if len(i["texts"])!=0 and len(i["answers"])!=0 and i["tournament_id"]:
@@ -969,13 +1013,15 @@ def fetchqs(cats,subcats,diffs,tours,tuorbon):
                             k=k[:k.find("&lt")]
                         c[n]=k
                     bbbb.append(c)
+                    bbbbbb.append((i["tournament"]["name"],i["tournament"]["difficulty_num"]))
         if len(bbb)>0:
-            bons=list(zip(bbb,bbbb,bbbbb))
+            bons=list(zip(bbb,bbbb,bbbbb,bbbbbb))
             random.shuffle(bons)
-            bbb,bbbb,bbbbb=zip(*bons)
+            bbb,bbbb,bbbbb,bbbbbb=zip(*bons)
             bonlist.extend(list(bbb))
             bonfalist.extend(list(bbbb))
             bonalist.extend(list(bbbbb))
+            bontourlist.extend(list(bbbbbb))
 settourlist()
 setup()
 if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
