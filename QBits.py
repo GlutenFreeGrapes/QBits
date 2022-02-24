@@ -8,8 +8,8 @@ tttttooooouuuuurrrrr,tourids=dict(),dict()
 cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,root,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,timeoutctr,endctr,qctr,qframe,data=None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
 buzzed,reading,dead,ansalrgiven,qskipped,qfromreader=False,False,True,False,False,False
 ptn,bagels=[0,0,0],[0,0,0,0]
-tu,bon,tupts,bpts,tunum,bonnum,subbonnum,pm,curwd,curbpts,tbrn=0,0,0,0,-1,-1,0,0,0,0,0
-tulist,tualist,tufalist,tustatus,tuwd,bonlist,bonalist,bonfalist,bonstatus,subbonstatus,tutourlist,bontourlist=[],[],[],[],[],[],[],[],[],[],[],[]
+tu,bon,tupts,bpts,tunum,bonnum,subbonnum,pm,curwd,curbpts,tbrn,qlen=0,0,0,0,-1,-1,0,0,0,0,0,0
+tulist,tualist,tufalist,tustatus,tuwd,bonlist,bonalist,bonfalist,bonstatus,subbonstatus,tutourlist,bontourlist,elerity,celerity,ielerity=[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]
 class ToolTip(object):
     def __init__(self, widget):
         self.widget = widget
@@ -81,8 +81,14 @@ def gencard():
         tstr+="\nTOSSUP POINTS: %s"%(tupts)
         tstr+="\nPOINTS PER TOSSUP HEARD: %s"%(0.0 if tu==0 else round(tupts/tu,2))
         tstr+="\n15s/10s/0s/-5s: %s/%s/%s/%s"%(ptn[0],ptn[1],tustatus.count(0),ptn[2])
+        tstr+="\nAVERAGE QUESTION CELERITY: %s"%(sum(elerity)/len(elerity) if len(elerity)>0 else None)
+        tstr+="\nAVERAGE CORRECT CELERITY: %s"%(sum(celerity)/len(celerity) if len(celerity)>0 else None)
+        tstr+="\nAVERAGE INCORRECT CELERITY: %s"%(sum(ielerity)/len(ielerity) if len(ielerity)>0 else None)
         tstr+="\n"
+        ccc=0
+        iii=0
         for i in range(len(tulist)):
+            bz=False
             tstr+="\nTOSSUP #%s"%(i+1)
             if tustatus[i]!='skipped':
                 wlist=tulist[i].split()
@@ -106,15 +112,22 @@ def gencard():
                             wlist.insert(k+1,n)
                             break
                 if tuwd[i]!=-1:
+                    bz=True
                     if wlist[tuwd[i]-1].find("(*)")<0:
                         wlist[tuwd[i]-1]+=" 🔔"
                     else:
                         wlist[tuwd[i]-1]=wlist[tuwd[i]-1][:len(wlist[tuwd[i]-1])-3]+" 🔔 (*)"
+                    if tustatus[i]>0:
+                        ccc+=1
+                    else:
+                        iii+=1
                 tstr+="\nTOURNAMENT: %s"%tutourlist[i][0]
                 tstr+="\nDIFFICULTY: %s (%s)"%(tutourlist[i][1],diffdict[tutourlist[i][1]])
                 tstr+="\nQUESTION: %s"%' '.join(wlist)
                 tstr+="\nANSWER: %s"%tualist[i]
                 tstr+="\nSCORE: %s"%(tustatus[i])
+                if bz:
+                    tstr+="\nCELERITY: %s"%elerity[ccc+iii-1]
             else:
                 tstr+='\n[skipped]'
             tstr+="\n"
@@ -372,8 +385,10 @@ def qscreen(tuorbon,timeint):
     statframe.grid(row=0,column=0)
     pstatframe=tk.Frame(statframe)
     pstatframe.grid(row=0,column=0)
+    cstatframe=tk.Frame(statframe)
+    cstatframe.grid(row=1,column=0)
     tstatframe=tk.Frame(statframe)
-    tstatframe.grid(row=1,column=0)
+    tstatframe.grid(row=2,column=0)
     qframe=tk.Frame(root)
     qframe.grid(row=1,column=0)
     qcanvas=tk.Canvas(qframe,width=650,height=450,background="white")
@@ -394,11 +409,15 @@ def qscreen(tuorbon,timeint):
     bonuspts=tk.Label(pstatframe,text='Bonus Points: %s'%(bpts))
     ppb=tk.Label(pstatframe,text='PPB: %s'%(0.0 if bon==0 else round(bpts/bon,2)))
     tttb=tk.Label(pstatframe,text='30s/20s/10s/0s: %s'%('/'.join(str(i) for i in bagels)))
+    eler=tk.Label(cstatframe,text='Average Celerity: %s'%(round(sum(elerity)/len(elerity),3) if len(elerity)>0 else None))
+    celer=tk.Label(cstatframe,text='Average Celerity: %s'%(round(sum(celerity)/len(celerity),3) if len(celerity)>0 else None))
+    ieler=tk.Label(cstatframe,text='Average Incorrect Celerity: %s'%(round(sum(ielerity)/len(ielerity),3) if len(ielerity)>0 else None))
     tourney=tk.Label(tstatframe,text='Tournament: ---')
     difficul=tk.Label(tstatframe,text='Difficulty: - (---)')
     is_this_correct=tk.StringVar()
     def buzzin():
-        global buzzed,timeoutctr,root,enterans
+        global buzzed,timeoutctr,root,enterans,elerity
+        elerity.append(max(1-(curwd+1)/qlen,0.0))
         root.unbind("<space>")        
         buzzed=True
         answerline['state']='normal'
@@ -413,7 +432,7 @@ def qscreen(tuorbon,timeint):
         answerline.focus_set()
         timeoutctr=root.after(8000,checkanswer)
     def checkanswer():
-        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn,tustatus,bonstatus,subbonstatus,tuwd
+        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn,tustatus,bonstatus,subbonstatus,tuwd,elerity,celerity,ielerity
         if not ansalrgiven and not dead:
             root.unbind("<Return>")
             if timeoutctr:
@@ -436,6 +455,7 @@ def qscreen(tuorbon,timeint):
                             tupts+=10
                             ptn[1]+=1
                             tustatus.append(10)
+                        celerity.append(elerity[-1])
                         if tuorbon==2:
                             tbrn=1
                     else:
@@ -449,12 +469,14 @@ def qscreen(tuorbon,timeint):
                                     tupts+=10
                                     ptn[1]+=1
                                     tustatus.append(10)
+                                celerity.append(elerity[-1])
                                 if tuorbon==2:
                                     tbrn=1
                             else:
                                 tupts-=5
                                 ptn[2]+=1
                                 tustatus.append(-5)
+                                ielerity.append(elerity[-1])
                         else:
                             if prompt(givenans,actualans):
                                 if curwd<=pm:
@@ -465,11 +487,13 @@ def qscreen(tuorbon,timeint):
                                     tupts+=10
                                     ptn[1]+=1
                                     tustatus.append(10)
+                                celerity.append(elerity[-1])
                                 if tuorbon==2:
                                     tbrn=1
                             else:
                                 tupts-=0
                                 tustatus.append(0)
+                                ielerity.append(elerity[-1])
                     tu+=1
                     tuwd.append(curwd)
                     qcanvas.itemconfigure(qtext,text=tulist[tunum]+'\n\n'+tualist[tunum])
@@ -483,6 +507,9 @@ def qscreen(tuorbon,timeint):
                     tossuppts['text']='Tossup Points: %s'%(tupts)
                     ppg['text']='PPTUH: %s'%(0.0 if tu==0 else round(tupts/tu,2))
                     ptnct['text']='Powers/10s/Negs: %s'%('/'.join(str(i) for i in ptn))
+                    eler['text']='Average Celerity: %s'%(round(sum(elerity)/len(elerity),3) if len(elerity)>0 else None)
+                    celer['text']='Average Correct Celerity: %s'%(round(sum(celerity)/len(celerity),3) if len(celerity)>0 else None)
+                    ieler['text']='Average Incorrect Celerity: %s'%(round(sum(ielerity)/len(ielerity),3) if len(ielerity)>0 else None)
                     root.update()
             else:
                 answerline['state']='disabled'
@@ -558,6 +585,7 @@ def qscreen(tuorbon,timeint):
                     subbonnum+=1
             if tuorbon==0:
                 if tunum>=len(tulist):
+                    tunum-=1
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                     reading=False
                     dead=True
@@ -580,6 +608,7 @@ def qscreen(tuorbon,timeint):
                 read_tossup(qframe,qcanvas,qtext,thyme)
             elif tuorbon==1:
                 if bonnum>=len(bonlist):
+                    bonnum-=1
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                     reading=False
                     dead=True
@@ -607,6 +636,7 @@ def qscreen(tuorbon,timeint):
             else:
                 if tbrn==0:
                     if tunum>=len(tulist):
+                        tunum-=1
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                         reading=False
                         dead=True
@@ -629,6 +659,7 @@ def qscreen(tuorbon,timeint):
                     read_tossup(qframe,qcanvas,qtext,thyme)
                 else:
                     if bonnum>=len(bonlist):
+                        bonnum-=1
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                         reading=False
                         dead=True
@@ -668,6 +699,7 @@ def qscreen(tuorbon,timeint):
                 tustatus.append('skipped')
                 tunum+=1
                 if tunum>=len(tulist):
+                    tunum-=1
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                     reading=False
                     dead=True
@@ -691,6 +723,7 @@ def qscreen(tuorbon,timeint):
                 subbonnum=0
                 curbpts=0
                 if bonnum>=len(bonlist):
+                    bonnum-=1
                     qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                     reading=False
                     dead=True
@@ -714,6 +747,7 @@ def qscreen(tuorbon,timeint):
                     tustatus.append('skipped')
                     tunum+=1
                     if tunum>=len(tulist):
+                        tunum-=1
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                         reading=False
                         dead=True
@@ -737,6 +771,7 @@ def qscreen(tuorbon,timeint):
                     subbonnum=0
                     curbpts=0
                     if bonnum>=len(bonlist):
+                        bonnum-=1
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                         reading=False
                         dead=True
@@ -757,6 +792,9 @@ def qscreen(tuorbon,timeint):
     read=tk.Button(controlframe,text="Next/Skip [\]",command=readq)
     root.bind('<\>', lambda event: readq())
     read.grid(row=0,column=0)
+    eler.grid(row=0,column=0)
+    celer.grid(row=0,column=1)
+    ieler.grid(row=0,column=2)
     tourney.grid(row=0,column=0)
     difficul.grid(row=0,column=1)
     if tuorbon==0:
@@ -870,7 +908,7 @@ def check_if_buzz_at_eobon():
             allread+="\n\n"+bonalist[bonnum][n]+"\n\n"
         qcanvas.itemconfigure(qtext,text=allread+bonlist[bonnum][subbonnum]+"\n\n"+bonalist[bonnum][subbonnum])
 def read_tossup(window,canvas,question_txt,timeint):
-    global pm
+    global pm,qlen
     current_q = tulist[tunum]
     powermark=current_q.find("(*)")
     words=current_q.split()
@@ -900,7 +938,8 @@ def read_tossup(window,canvas,question_txt,timeint):
                     break
     else:
         pm=-1
-    itertu(words, 0, window,canvas,question_txt,timeint)
+    qlen=len(words)
+    itertu(words, 1, window,canvas,question_txt,timeint)
 def itertu(words, i, window,canvas,question_txt,timeint):
     global curwd,qctr
     curwd=i-1
@@ -927,7 +966,7 @@ def read_bonus(window,canvas,question_txt,timeint):
     for n,i in enumerate(aread):
         allread+=i
         allread+="\n\n"+bonalist[bonnum][n]+"\n\n"
-    iterbon(allread,bonwords, 0, window,canvas,question_txt,timeint)
+    iterbon(allread,bonwords, 1, window,canvas,question_txt,timeint)
 def iterbon(allread, words, i, window,canvas,question_txt,timeint):
     if i > len(words):
         global reading,endctr,qctr
