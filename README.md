@@ -3,22 +3,23 @@ An all-in-one quizbowl question reader.
 
 ## Keybinds
 ### Select Questions Window
-[`Enter`] → [Go]
+`[Enter]` → [Go]
 
-[`Esc`] or [`Ctrl+W`] → [Quit]
+`[Esc]` or `[Ctrl+W]` → [Quit]
 
 ### Question Window
-[`\`] → [Next/Skip]
+`[\]` → [Next/Skip]
 
-[`Space`] → [Buzz]
+`[Space]` → [Buzz]
 
-[`Enter`] → [Enter]
+`[Enter]` → [Enter]
 
-[`Esc`] → [Back]
+`[Esc]` → [Back]
 
-[`Ctrl+W`] → [Leave]
+`[Ctrl+W]` → [Leave]
 
 ## How to use
+### You will need a json file which contains the entire database. It's located [here](https://drive.google.com/drive/folders/1TYoG_lBL-n96OkaM8mLq-xsD_dZSyruk?usp=sharing) and the one you need to download is the one called 'qdbcompressed.json'. Make sure it is in the same directory as the QBits.py file. 
 When the program is run, you will be prompted with a screen asking for inputs on what categories you want, difficulties, etc. Click the buttons labeled "Click to select options" and select your options. You can also select the time interval in milliseconds between each word and whether you want tossups, bonuses, or both. 
 
 When you have selected your options, you should be able to reading questions. Your stats for the session will be displayed at the top of the window. When you buzz, there will be an 8-second timer for you to type in your answer. At the end of tossups, there is a 5-second window to let you buzz in, and at the end of bonuses, there is a 10-second timer to answer. 
