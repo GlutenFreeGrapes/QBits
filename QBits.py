@@ -5,7 +5,7 @@ sssssccccc={"Current Events Subcategories":["American Current Events", "Other Cu
 ddddd=list(range(1,10))
 diffdict={1:"Middle School",2:"Easy High School",3:"Regular High School",4:"Hard High School",5:"High School Nationals",6:"Easy College",7:"Regular College",8:"Hard College",9:"Open"}
 tttttooooouuuuurrrrr,tourids=dict(),dict()
-cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,root,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,timeoutctr,endctr,qctr,qframe,data=None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
+cc,sscc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,root,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,timeoutctr,endctr,qctr,qframe,data,curq=None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
 buzzed,reading,dead,ansalrgiven,qskipped,qfromreader=False,False,True,False,False,False
 ptn,bagels=[0,0,0],[0,0,0,0]
 tu,bon,tupts,bpts,tunum,bonnum,subbonnum,pm,curwd,curbpts,tbrn,qlen=0,0,0,0,-1,-1,0,0,0,0,0,0
@@ -73,7 +73,7 @@ def handback(c,sc,d,tour,tb,tint):
     return
 def gencard():
     s=''
-    if len(tulist)!=0:
+    if len(tulist)!=0 or len(tulist)!=tustatus.count('skipped'):
         tstr='TOSSUPS\n'
         tstr+="\nTOSSUPS: %s"%len(tulist)
         tstr+="\nTOSSUPS SKIPPED: %s"%tustatus.count('skipped')
@@ -134,7 +134,7 @@ def gencard():
         s+=tstr
     if len(tulist)!=0 and len(bonlist)!=0:
         s+="\n\n"
-    if len(bonlist)!=0:
+    if len(bonlist)!=0 or len(bonlist)!=bonstatus.count('skipped'):
         bstr='BONUSES\n'
         bstr+="\nBONUSES: %s"%len(bonlist)
         bstr+="\nBONUSES SKIPPED: %s"%bonstatus.count('skipped')
@@ -180,15 +180,13 @@ def leavereader():
         bonlist=bonlist[:bonnum+1]
         bonalist=bonalist[:bonnum+1]
         bonfalist=bonfalist[:bonnum+1]
-        bontourlist=tutourlist[:bonnum+1]
+        bontourlist=bontourlist[:bonnum+1]
         if reading or not (dead or ansalrgiven):
             if tbrn==0:
                 tustatus.append('skipped')
                 tuwd.append(-1)
-                tunum+=1
             else:
                 bonstatus.append('skipped')
-                bonnum+=1
                 subbonstatus=[]
         gencard()
         sys.exit()
@@ -343,16 +341,17 @@ def backtohomescreen():
     bonlist=bonlist[:bonnum+1]
     bonalist=bonalist[:bonnum+1]
     bonfalist=bonfalist[:bonnum+1]
-    bontourlist=tutourlist[:bonnum+1]
+    bontourlist=bontourlist[:bonnum+1]
     if reading or (not reading and not dead and not ansalrgiven):
         if tbrn==0:
             tustatus.append('skipped')
             tuwd.append(-1)
-            tunum+=1
         else:
             bonstatus.append('skipped')
-            bonnum+=1
             subbonstatus=[]
+    elif tbrn==1 and 0<len(subbonstatus)<3:
+        bonstatus.append('skipped')
+        subbonstatus=[]
     if qctr:
         qframe.after_cancel(qctr)
     if endctr:
@@ -362,6 +361,8 @@ def backtohomescreen():
     root.destroy()
     buzzed,reading,dead,ansalrgiven,qskipped=False,False,True,False,False
     pm,curwd,curbpts=0,0,0
+    if tbrn==1:
+        bonnum+=1
     subbonnum=-1
     setup()
     if (cc,sscc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None,None):
@@ -393,7 +394,7 @@ def qscreen(tuorbon,timeint):
     qframe.grid(row=1,column=0)
     qcanvas=tk.Canvas(qframe,width=650,height=450,background="white")
     qcanvas.pack()
-    qtext=qcanvas.create_text(int(qcanvas['width'])/2,int(qcanvas['height'])/2,text='Press [Next/Skip] to start', width=qcanvas['width'], fill="black",font=("times new roman", 13))
+    qtext=qcanvas.create_text(int(qcanvas['width'])/2,int(qcanvas['height'])/2,text='Press [Next/Skip] to start', width=qcanvas['width'], fill="black",font=("calibri",13))
     bframe=tk.LabelFrame(root, text='Controls')
     bframe.grid(row=2,column=0)
     controlframe=tk.Frame(bframe)
@@ -410,13 +411,14 @@ def qscreen(tuorbon,timeint):
     ppb=tk.Label(pstatframe,text='PPB: %s'%(0.0 if bon==0 else round(bpts/bon,2)))
     tttb=tk.Label(pstatframe,text='30s/20s/10s/0s: %s'%('/'.join(str(i) for i in bagels)))
     eler=tk.Label(cstatframe,text='Average Celerity: %s'%(round(sum(elerity)/len(elerity),3) if len(elerity)>0 else None))
-    celer=tk.Label(cstatframe,text='Average Celerity: %s'%(round(sum(celerity)/len(celerity),3) if len(celerity)>0 else None))
+    celer=tk.Label(cstatframe,text='Average Correct Celerity: %s'%(round(sum(celerity)/len(celerity),3) if len(celerity)>0 else None))
     ieler=tk.Label(cstatframe,text='Average Incorrect Celerity: %s'%(round(sum(ielerity)/len(ielerity),3) if len(ielerity)>0 else None))
     tourney=tk.Label(tstatframe,text='Tournament: ---')
     difficul=tk.Label(tstatframe,text='Difficulty: - (---)')
     is_this_correct=tk.StringVar()
     def buzzin():
         global buzzed,timeoutctr,root,enterans,elerity
+        qcanvas.itemconfigure(qtext,text=' '.join(curq[:curwd+1])+' 🔔')
         elerity.append(max(1-(curwd+1)/qlen,0.0))
         root.unbind("<space>")        
         buzzed=True
@@ -496,7 +498,7 @@ def qscreen(tuorbon,timeint):
                                 ielerity.append(elerity[-1])
                     tu+=1
                     tuwd.append(curwd)
-                    qcanvas.itemconfigure(qtext,text=tulist[tunum]+'\n\n'+tualist[tunum])
+                    qcanvas.itemconfigure(qtext,text=' '.join(curq[:curwd])+' 🔔 '+' '.join(curq[curwd:])+'\n\n'+tualist[tunum])
                     answerline['state']='disabled'
                     enterans['state']='disabled'
                     root.unbind("<Return>")
@@ -602,7 +604,7 @@ def qscreen(tuorbon,timeint):
                 if reading and tbrn==0:
                     buzzer['state']='normal'
                     root.bind("<space>", lambda event: buzzin())
-                qcanvas.itemconfigure(qtext, font=("times new roman", 13))
+                qcanvas.itemconfigure(qtext, font=("calibri",13))
                 tourney['text']="Tournament: %s"%tutourlist[tunum][0]
                 difficul['text']="Difficulty: %s (%s)"%(tutourlist[tunum][1],diffdict[tutourlist[tunum][1]])
                 read_tossup(qframe,qcanvas,qtext,thyme)
@@ -628,10 +630,10 @@ def qscreen(tuorbon,timeint):
                     answerline['state']='normal'
                     enterans['state']='normal'
                     root.bind("<Return>", lambda event: checkanswer())
-                qcanvas.itemconfigure(qtext, font=("times new roman", 13))
+                qcanvas.itemconfigure(qtext, font=("calibri",13))
                 answerline.focus_set()
-                tourney['text']="Tournament: %s"%bontourlist[tunum][0]
-                difficul['text']="Difficulty: %s (%s)"%(bontourlist[tunum][1],diffdict[bontourlist[tunum][1]])
+                tourney['text']="Tournament: %s"%bontourlist[bonnum][0]
+                difficul['text']="Difficulty: %s (%s)"%(bontourlist[bonnum][1],diffdict[bontourlist[bonnum][1]])
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
                 if tbrn==0:
@@ -653,7 +655,7 @@ def qscreen(tuorbon,timeint):
                     if reading and tbrn==0:
                         buzzer['state']='normal'
                         root.bind("<space>", lambda event: buzzin())
-                    qcanvas.itemconfigure(qtext, font=("times new roman", 13))
+                    qcanvas.itemconfigure(qtext, font=("calibri",13))
                     tourney['text']="Tournament: %s"%tutourlist[tunum][0]
                     difficul['text']="Difficulty: %s (%s)"%(tutourlist[tunum][1],diffdict[tutourlist[tunum][1]])
                     read_tossup(qframe,qcanvas,qtext,thyme)
@@ -679,10 +681,10 @@ def qscreen(tuorbon,timeint):
                         answerline['state']='normal'
                         enterans['state']='normal'
                         root.bind("<Return>", lambda event: checkanswer())
-                    qcanvas.itemconfigure(qtext, font=("times new roman", 13))
+                    qcanvas.itemconfigure(qtext, font=("calibri",13))
                     answerline.focus_set()
-                    tourney['text']="Tournament: %s"%bontourlist[tunum][0]
-                    difficul['text']="Difficulty: %s (%s)"%(bontourlist[tunum][1],diffdict[bontourlist[tunum][1]])
+                    tourney['text']="Tournament: %s"%bontourlist[bonnum][0]
+                    difficul['text']="Difficulty: %s (%s)"%(bontourlist[bonnum][1],diffdict[bontourlist[bonnum][1]])
                     read_bonus(qframe,qcanvas,qtext,thyme)
         else:
             answerline.delete(0,len(is_this_correct.get()))
@@ -713,6 +715,7 @@ def qscreen(tuorbon,timeint):
                     enterans['state']='disabled'
                     root.unbind("<Return>")
                     return
+                qcanvas.itemconfigure(qtext, font=("calibri",13))
                 tourney['text']="Tournament: %s"%tutourlist[tunum][0]
                 difficul['text']="Difficulty: %s (%s)"%(tutourlist[tunum][1],diffdict[tutourlist[tunum][1]])
                 read_tossup(qframe,qcanvas,qtext,thyme)
@@ -737,9 +740,10 @@ def qscreen(tuorbon,timeint):
                     enterans['state']='disabled'
                     root.unbind("<Return>")
                     return
+                qcanvas.itemconfigure(qtext, font=("calibri",13))
                 answerline.focus_set()
-                tourney['text']="Tournament: %s"%bontourlist[tunum][0]
-                difficul['text']="Difficulty: %s (%s)"%(bontourlist[tunum][1],diffdict[bontourlist[tunum][1]])
+                tourney['text']="Tournament: %s"%bontourlist[bonnum][0]
+                difficul['text']="Difficulty: %s (%s)"%(bontourlist[bonnum][1],diffdict[bontourlist[bonnum][1]])
                 read_bonus(qframe,qcanvas,qtext,thyme)
             else:
                 if tbrn==0:
@@ -761,6 +765,7 @@ def qscreen(tuorbon,timeint):
                         enterans['state']='disabled'
                         root.unbind("<Return>")
                         return
+                    qcanvas.itemconfigure(qtext, font=("calibri",13))
                     tourney['text']="Tournament: %s"%tutourlist[tunum][0]
                     difficul['text']="Difficulty: %s (%s)"%(tutourlist[tunum][1],diffdict[tutourlist[tunum][1]])
                     read_tossup(qframe,qcanvas,qtext,thyme)
@@ -785,9 +790,10 @@ def qscreen(tuorbon,timeint):
                         enterans['state']='disabled'
                         root.unbind("<Return>")
                         return
+                    qcanvas.itemconfigure(qtext, font=("calibri",13))
                     answerline.focus_set()
-                    tourney['text']="Tournament: %s"%bontourlist[tunum][0]
-                    difficul['text']="Difficulty: %s (%s)"%(bontourlist[tunum][1],diffdict[bontourlist[tunum][1]])
+                    tourney['text']="Tournament: %s"%bontourlist[bonnum][0]
+                    difficul['text']="Difficulty: %s (%s)"%(bontourlist[bonnum][1],diffdict[bontourlist[bonnum][1]])
                     read_bonus(qframe,qcanvas,qtext,thyme)
     read=tk.Button(controlframe,text="Next/Skip [\]",command=readq)
     root.bind('<\>', lambda event: readq())
@@ -840,18 +846,8 @@ def close_enough(given,htmlans,normalans):
     for i in accepans:
         if enchant.utils.levenshtein(given,i)<min(3,len(i)//2):
             return True
-    dna=normalans.find("[")
-    if dna<0:
-        dna=normalans.find("(")
-        if dna<0:
-            dna=normalans.find("do not accept")
-    if dna<0:
-        if enchant.utils.levenshtein(given,normalans)<min(3,len(normalans)//2):
-            return True
-    else:
-        s=normalans[:dna].strip()
-        if enchant.utils.levenshtein(given,s)<min(3,len(normalans)//2):
-            return True
+    if enchant.utils.levenshtein(given,normalans)<min(3,len(normalans)//2):
+        return True
     return False
 def check_if_buzz_at_eotu():
     global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,reading,tuwd,tbrn
@@ -908,7 +904,7 @@ def check_if_buzz_at_eobon():
             allread+="\n\n"+bonalist[bonnum][n]+"\n\n"
         qcanvas.itemconfigure(qtext,text=allread+bonlist[bonnum][subbonnum]+"\n\n"+bonalist[bonnum][subbonnum])
 def read_tossup(window,canvas,question_txt,timeint):
-    global pm,qlen
+    global pm,qlen,curq
     current_q = tulist[tunum]
     powermark=current_q.find("(*)")
     words=current_q.split()
@@ -939,6 +935,7 @@ def read_tossup(window,canvas,question_txt,timeint):
     else:
         pm=-1
     qlen=len(words)
+    curq=words
     itertu(words, 1, window,canvas,question_txt,timeint)
 def itertu(words, i, window,canvas,question_txt,timeint):
     global curwd,qctr
@@ -1031,9 +1028,9 @@ def fetchqs(cats,subcats,diffs,tours,tuorbon):
     if tuorbon==1 or tuorbon==2:
         for i in data["data"]["bonuses"]:
             if len(i["texts"])!=0 and len(i["answers"])!=0 and i["tournament_id"]:
-                if((i["category_id"] in clist or i["subcategory_id"] in sclist) and (i["tournament"]["difficulty_num"] in dlist or i["tournament_id"] in tlist))and i["texts"] not in bonlist:
-                    b=i["texts"]
-                    b[0]=i["leadin"]+"\n"+b[0]
+                b=i["texts"].copy()
+                b[0]=i["leadin"]+"\n"+b[0]
+                if((i["category_id"] in clist or i["subcategory_id"] in sclist) and (i["tournament"]["difficulty_num"] in dlist or i["tournament_id"] in tlist))and b not in bonlist:
                     for n,j in enumerate(b):
                         b[n]=stripemsub(j)
                     bbb.append(b)
