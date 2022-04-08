@@ -215,7 +215,7 @@ def setup():
     diffl.grid(row=1,column=0, sticky="e")
     difft.grid(row=1,column=1,padx=(0,5))
     ldiffs.grid(row=1,column=2, sticky="w")
-    CreateToolTip(ldiffs, text = 'Pick whatever difficulty levels you want via the dropdown menu. Leave blank for all. \nBelow is a list of all the difficulty level numbers and the difficulties they correspond to: \n★ 1 → Novice (Latin I)\n★ 2 → Intermediate (Latin II)\n★ 3 → Advanced (Latin III+)\n\nEx. \n"1" → questions with novice difficulty\n"1, 2, 3" → questions with difficulty ranging from hard novice to advanced\n"3", "2021 Yale Novice" in tournaments → any questions of advanced difficulty\n along with questions from 2021 Yale Novice packet')
+    CreateToolTip(ldiffs, text = 'Pick whatever difficulty levels you want via the dropdown menu. Leave blank for all. \nBelow is a list of all the difficulty level numbers and the difficulties they correspond to: \n★ 1 → Novice  - Latin I\n★ 2 → Intermediate  - Latin II\n★ 3 → Advanced  - Latin III+\n\nEx. \n"1" → questions with novice difficulty\n"1, 2, 3" → questions with difficulty ranging from hard novice to advanced\n"3", "2021 Yale Novice" in tournaments → any questions of advanced difficulty\n along with questions from 2021 Yale Novice packet')
     tourl.grid(row=2,column=0, sticky="e")
     tourt.grid(row=2,column=1,padx=(0,5))
     ltours.grid(row=2,column=2, sticky="w")
@@ -375,7 +375,7 @@ def qscreen(tuorbon,timeint):
         if endctr:
             qframe.after_cancel(endctr)
         answerline.focus_set()
-        timeoutctr=root.after(8000,checkanswer)
+        timeoutctr=root.after(10000,checkanswer)
     def checkanswer():
         global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn,tustatus,bonstatus,subbonstatus,tuwd,elerity,celerity,ielerity,bonnum,read
         if not ansalrgiven and not dead:
@@ -812,7 +812,7 @@ def qscreen(tuorbon,timeint):
         if i > len(words):
             global reading,endctr,qctr
             reading=False
-            endctr=window.after(5000,check_if_buzz_at_eobon)
+            endctr=window.after(15000,check_if_buzz_at_eobon)
             return
         if qskipped:
             return
@@ -887,7 +887,7 @@ def fetchqs(cats,diffs,tours,tuorbon):
     else:
         for i in data["data"]["questions"]:
             if i["text"]!="[missing]" and i["answer"]!="[missing]" and i["tournament_id"]:
-                if ((i["category_id"] in clist) and (i["tournament"]["difficulty_num"] in dlist or i["tournament_id"] in tlist)) and i["text"] not in tulist:
+                if ((i["category_id"] in clist) and (i["tournament"]["difficulty_num"] in dlist or i["tournament_id"] in tlist)) and i["text"] not in tulist and len(i["texts"])>0:
                     z=i["text"]
                     z=stripemsub(z)
                     t.append(z)

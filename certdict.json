@@ -212,6 +212,25 @@
           "name": "2021 Yale Novice",
           "difficulty_num": 1
         }
+      },
+      {
+        "id": 11,
+        "category_id": 4,
+        "tournament_id": 4,
+        "text": "Venus, the Roman goddess of love, was jealous of what mortal whose beauty might have surpassed even her own?",
+        "answer": "PSYCHE",
+        "texts": [
+          "What does the name Psyche mean?"
+        ],
+        "answers": [
+          "SOUL"
+        ],
+        "tournament": {
+          "id": 4,
+          "year": 2001,
+          "name": "2001 Ad Fontes Academy Certamen",
+          "difficulty_num": 1
+        }
       }
     ]
   }

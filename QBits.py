@@ -432,7 +432,7 @@ def qscreen(tuorbon,timeint):
         if endctr:
             qframe.after_cancel(endctr)
         answerline.focus_set()
-        timeoutctr=root.after(8000,checkanswer)
+        timeoutctr=root.after(10000,checkanswer)
     def checkanswer():
         global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn,tustatus,bonstatus,subbonstatus,tuwd,elerity,celerity,ielerity
         if not ansalrgiven and not dead:
@@ -968,7 +968,7 @@ def iterbon(allread, words, i, window,canvas,question_txt,timeint):
     if i > len(words):
         global reading,endctr,qctr
         reading=False
-        endctr=window.after(10000,check_if_buzz_at_eobon)
+        endctr=window.after(15000,check_if_buzz_at_eobon)
         return
     if qskipped:
         return
