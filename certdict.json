@@ -1,0 +1,218 @@
+{
+  "data": 
+  {
+    "num_questions": 10,
+    "questions": [
+      {
+        "id": 1,
+        "category_id": 2,
+        "tournament_id": 1,
+        "text": "What meaning is shared by the nouns verecundia and pudor?",
+        "answer": "MODESTY / SHAME / SHYNESS / BASHFULNESS [ACCEPT EQUIVALENTS]",
+        "texts": [
+          "What Latin noun meaning “weariness” is derived from the verb taedet?",
+          "What Latin noun meaning “freedom” is derived from the verb licet?"
+        ],
+        "answers": [
+          "TAEDIUM",
+          "LICENTIA"
+        ],
+        "tournament": {
+          "id": 1,
+          "year": 2021,
+          "name": "2021 Yale Advanced",
+          "difficulty_num": 3
+        }
+      },
+      {
+        "id": 2,
+        "category_id": 3,
+        "tournament_id": 1,
+        "text": "Who was criticized by Caesar in an epigram for lacking vīs cōmica and being a dīmidiātus Menander, and by his contemporaries for contāminātiō in his 6 comedies?",
+        "answer": "TERENCE // (P.) TERENTIUS (AFER)",
+        "texts": [
+          "Because Terence had been brought to Rome as an enslaved person, many people believed one of two prominent Romans wrote his comedies for him. Name either.",
+          "A legend probably invented to connect Terence with his comic predecessors says that Terence read the draft of his Andria to what great comic playwright and friend of Ennius for approval?"
+        ],
+        "answers": [
+          "(P. CORNELIUS) SCIPIO AEMILIANUS or (C.) LAELIUS (SAPIENS)",
+          "CAECILIUS STATIUS"
+        ],
+        "tournament": {
+          "id": 1,
+          "year": 2021,
+          "name": "2021 Yale Advanced",
+          "difficulty_num": 3
+        }
+      },
+      {
+        "id": 3,
+        "category_id": 4,
+        "tournament_id": 1,
+        "text": "Who — following in his brothers’ footsteps of settling lands like Thasus, Cilicia, and Phoenicia — came to southern Boeotia where he killed a serpent and sacrificed the cow he had followed?",
+        "answer": "CADMUS",
+        "texts": [
+          "What was special about the cow Cadmus had followed?",
+          "To what Phoenician goddess, associated with Athena, did Cadmus sacrifice the cow?"
+        ],
+        "answers": [
+          "IT HAD MARKINGS LIKE FULL MOONS ON ITS SIDES",
+          "ONCA"
+        ],
+        "tournament": {
+          "id": 1,
+          "year": 2021,
+          "name": "2021 Yale Advanced",
+          "difficulty_num": 3
+        }
+      },
+      {
+        "id": 4,
+        "category_id": 1,
+        "tournament_id": 1,
+        "text": "What emperor — who was forced to deal with two Egyptian pretenders, including Domitius Domitianus — attempted to clamp down on inflation with the “Edict on Maximum Prices” and reorganized the empire into a tetrarchy?",
+        "answer": "DIOCLETIAN / DIOCLES",
+        "texts": [
+          "What co-emperor of his did Diocletian send to lead the army against the Persian king Narses?",
+          "To what Croatian location did Diocletian retire in 305 AD, as he preferred cultivating cabbages to governing his realm?"
+        ],
+        "answers": [
+          "GALERIUS",
+          "SALONA / SPLIT"
+        ],
+        "tournament": {
+          "id": 1,
+          "year": 2021,
+          "name": "2021 Yale Advanced",
+          "difficulty_num": 3
+        }
+      },
+      {
+        "id": 5,
+        "category_id": 2,
+        "tournament_id": 2,
+        "text": "What type of animal might enjoy interacting with ossa, makes a sound expressed in Latin by latrāre, and is known as a cānis?",
+        "answer": "DOG",
+        "texts": [
+          "What is the meaning of the phrase cavē cānem, found on several ancient mosaics?",
+          "Define either lepus or cunīculus, which refer to similar species of animals."
+        ],
+        "answers": [
+          "BEWARE (OF) THE DOG",
+          "HARE or RABBIT"
+        ],
+        "tournament": {
+          "id": 2,
+          "year": 2021,
+          "name": "2021 Yale Intermediate",
+          "difficulty_num": 2
+        }
+      },
+      {
+        "id": 6,
+        "category_id": 4,
+        "tournament_id": 2,
+        "text": "What god’s aspects include Khepri, [blank]-Horakhty, and [blank]-Atum, representations of him at dawn, mid-day, and evening as he sailed through the sky as the sun deity?",
+        "answer": "(AMUN-)RA / (P)RE",
+        "texts": [
+          "What body part of Ra is an extension of his power and can take on the form of a fiery snake?",
+          "What divine craftsman helped Ra create life and is most famous for inventing the ritual known as the “Opening of the Mouth”?"
+        ],
+        "answers": [
+          "EYE",
+          "PTAH"
+        ],
+        "tournament": {
+          "id": 2,
+          "year": 2021,
+          "name": "2021 Yale Intermediate",
+          "difficulty_num": 2
+        }
+      },
+      {
+        "id": 7,
+        "category_id": 1,
+        "tournament_id": 2,
+        "text": "What types of events, which were brought to Rome in 264 B.C. and originally only took place at funerals, could feature such participants as secūtōrēs, andabatae, and myrmillōnēs?",
+        "answer": "GLADIATOR {FIGHTS / GAMES}",
+        "texts": [
+          "What type of gladiator usually fought against a secūtor or myrmillō?",
+          "What is the name for the type of person who rented, sold, and sometimes trained gladiators?"
+        ],
+        "answers": [
+          "RĒTIĀRIUS",
+          "LANISTA"
+        ],
+        "tournament": {
+          "id": 2,
+          "year": 2021,
+          "name": "2021 Yale Intermediate",
+          "difficulty_num": 2
+        }
+      },
+      {
+        "id": 8,
+        "category_id": 2,
+        "tournament_id": 3,
+        "text": "At the beginning of a conversation, you might use what Latin form, which literally means “be well,” to say “hello”?",
+        "answer": "SALVĒ(TE)",
+        "texts": [
+          "At the end of a conversation, you part ways with another Latin form that literally means “be well.” What is this form?",
+          "As you may know, salvē and valē are both examples of imperative verbs. Another imperative verb form, nōlī, is used to express what sort of command? A description is fine. "
+        ],
+        "answers": [
+          "VALĒ(TE)",
+          "TO NOT DO (SOMETHING) // PROHIBITION [ACCEPT EQUIVALENTS]"
+        ],
+        "tournament": {
+          "id": 3,
+          "year": 2021,
+          "name": "2021 Yale Novice",
+          "difficulty_num": 1
+        }
+      },
+      {
+        "id": 9,
+        "category_id": 4,
+        "tournament_id": 3,
+        "text": "What man visited Lake Stymphalus, Lerna, and the Underworld — where he captured Cerberus — during his twelve labors?",
+        "answer": "HERACLES / HERCULES",
+        "texts": [
+          "What cousin of Heracles assigned him the labors as punishment for murdering his own wife and children?",
+          "Name Heracles’s mother, whom Zeus tricked and slept with in disguise as her husband Amphitryon?"
+        ],
+        "answers": [
+          "EURYSTHEUS",
+          "ALCMENE / ALCMENA"
+        ],
+        "tournament": {
+          "id": 3,
+          "year": 2021,
+          "name": "2021 Yale Novice",
+          "difficulty_num": 1
+        }
+      },
+      {
+        "id": 10,
+        "category_id": 1,
+        "tournament_id": 3,
+        "text": "What man died in 14 A.D., having outlived his former allies Lepidus and Marc Antony and established a new form of government as Rome’s first emperor?",
+        "answer": "OCTAVIAN(US) / AUGUSTUS",
+        "texts": [
+          "At what battle of 31 B.C. did Octavian defeat Antony, making it easy for him to become emperor a few years later?",
+          "What daughter of Augustus was exiled to a small island after flagrantly disregarding the emperor’s harsh laws on morality?"
+        ],
+        "answers": [
+          "(BATTLE OF) ACTIUM",
+          "JULIA (THE ELDER)"
+        ],
+        "tournament": {
+          "id": 3,
+          "year": 2021,
+          "name": "2021 Yale Novice",
+          "difficulty_num": 1
+        }
+      }
+    ]
+  }
+}
