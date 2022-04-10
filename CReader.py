@@ -1,4 +1,4 @@
-import sys, tkinter as tk,enchant,random,json,datetime,unidecode
+import sys,tkinter as tk,enchant,random,json,datetime,unidecode
 from tkinter import messagebox
 ccccc=["History/Life","Language","Literature","Mythology"]
 ddddd=list(range(1,4))
@@ -412,7 +412,6 @@ def qscreen(tuorbon,timeint):
                                 tustatus.append(0)
                                 ielerity.append(elerity[-1])
                                 if tuorbon==1:
-                                    subbonnum=-1
                                     bonstatus.append('skipped')
                         else:
                             if prompt(givenans,actualans):
@@ -427,7 +426,6 @@ def qscreen(tuorbon,timeint):
                                 tustatus.append(0)
                                 ielerity.append(elerity[-1])
                                 if tuorbon==1:
-                                    subbonnum=-1
                                     bonstatus.append('skipped')
                     if tuorbon==1:
                         bonnum+=1
@@ -724,10 +722,13 @@ def qscreen(tuorbon,timeint):
             return True
         return False
     def check_if_buzz_at_eotu():
-        global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,reading,tuwd,tbrn
+        global dead,tu,tuct,tossuppts,ppg,ptnct,root,buzzer,qcanvas,qtext,reading,tuwd,tbrn,subbonnum,bonstatus,tustatus,bonnum
         if reading==False and buzzed==False:
             if ttbb==1:
                 tbrn=0
+                bonnum+=1
+                subbonnum=-1
+                bonstatus.append('skipped')
             tuwd.append(-1)
             dead=True
             tustatus.append(0)
@@ -739,10 +740,11 @@ def qscreen(tuorbon,timeint):
             root.unbind("<space>")
             root.update()
     def check_if_buzz_at_eobon():
-        global dead,bon,bonct,bonuspts,ppb,tttb,curbpts,answerline,reading,tbrn,bagels,bpts,subbonstatus,bonstatus,read
-        ans=is_this_correct.get()
+        global dead,bon,bonct,bonuspts,ppb,tttb,curbpts,answerline,reading,tbrn,bagels,bpts,subbonstatus,bonstatus,read,ansalrgiven
+        ans=is_this_correct.get().strip()
+        # checkanswer()
         if ans!="":
-            answerline.delete(0,len(ans))
+            ansalrgiven=True
             if close_enough(ans.lower().strip(),bonalist[bonnum][subbonnum]):
                 curbpts+=5
                 subbonstatus.append(5)
@@ -753,10 +755,12 @@ def qscreen(tuorbon,timeint):
                 else:
                     curbpts+=0
                     subbonstatus.append(0)
-        root.bind('<\>',lambda event: readq())
-        if reading==False and ansalrgiven==False:
-            dead=True
+        else:
             subbonstatus.append(0)
+        root.bind('<\>',lambda event: readq())
+        answerline.delete(0,len(is_this_correct.get()))
+        if reading==False:
+            dead=True
             if ttbb==1 and subbonnum==len(bonlist[bonnum])-1:
                 tbrn=0
             if subbonnum==len(bonlist[bonnum])-1:
