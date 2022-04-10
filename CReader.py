@@ -1,4 +1,4 @@
-import sys, tkinter as tk,enchant,random,json,datetime
+import sys, tkinter as tk,enchant,random,json,datetime,unidecode
 from tkinter import messagebox
 ccccc=["History/Life","Language","Literature","Mythology"]
 ddddd=list(range(1,4))
@@ -116,11 +116,11 @@ def gencard():
                     ind=bonid.index(tuid[i])
                     if bonstatus[ind]!='skipped':
                         for j in range(len(bonlist[ind])):
-                            tstr+="\nQUESTION: %s"%bonlist[ind][j]
-                            tstr+="\nANSWER: %s"%bonalist[ind][j]
-                            tstr+="\nSCORE: %s"%bonstatus[ind][j]
+                            tstr+="\n\tQUESTION: %s"%bonlist[ind][j]
+                            tstr+="\n\tANSWER: %s"%bonalist[ind][j]
+                            tstr+="\n\tSCORE: %s"%bonstatus[ind][j]
                     else:
-                        tstr+='\n[skipped]'
+                        tstr+='\n\t[skipped]'
             else:
                 tstr+='\n[skipped]'
             tstr+="\n"
@@ -377,7 +377,7 @@ def qscreen(tuorbon,timeint):
         answerline.focus_set()
         timeoutctr=root.after(10000,checkanswer)
     def checkanswer():
-        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn,tustatus,bonstatus,subbonstatus,tuwd,elerity,celerity,ielerity,bonnum,read
+        global tu,tupts,bon,bpts,ptn,bagels,ansalrgiven,timeoutctr,reading,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,curbpts,tbrn,tustatus,bonstatus,subbonstatus,tuwd,elerity,celerity,ielerity,bonnum,read,subbonnum
         if not ansalrgiven and not dead:
             root.unbind("<Return>")
             if timeoutctr:
@@ -390,7 +390,7 @@ def qscreen(tuorbon,timeint):
             if tbrn==0:
                 actualans=tualist[tunum]
                 if buzzed:
-                    if close_enough(givenans.lower(),actualans):
+                    if close_enough(givenans.lower().strip(),actualans):
                         tupts+=10
                         ptn[0]+=1
                         tustatus.append(10)
@@ -412,6 +412,7 @@ def qscreen(tuorbon,timeint):
                                 tustatus.append(0)
                                 ielerity.append(elerity[-1])
                                 if tuorbon==1:
+                                    subbonnum=-1
                                     bonstatus.append('skipped')
                         else:
                             if prompt(givenans,actualans):
@@ -426,7 +427,11 @@ def qscreen(tuorbon,timeint):
                                 tustatus.append(0)
                                 ielerity.append(elerity[-1])
                                 if tuorbon==1:
+                                    subbonnum=-1
                                     bonstatus.append('skipped')
+                    if tuorbon==1:
+                        bonnum+=1
+                        subbonnum=-1
                     tu+=1
                     tuwd.append(curwd)
                     qcanvas.itemconfigure(qtext,text=' '.join(curq[:curwd])+' 🔔 '+' '.join(curq[curwd:])+'\n\n'+tualist[tunum])
@@ -449,7 +454,7 @@ def qscreen(tuorbon,timeint):
                 enterans['state']='disabled'
                 root.unbind("<Return>")
                 actualans=bonalist[bonnum][subbonnum]
-                if close_enough(givenans.lower(),actualans):
+                if close_enough(givenans.lower().strip(),actualans):
                     curbpts+=5
                     subbonstatus.append(5)
                 else:
@@ -511,7 +516,6 @@ def qscreen(tuorbon,timeint):
                 tunum+=1
             else:
                 if subbonnum==len(bonlist[bonnum])-1 or bonnum<0:
-                    bonnum+=1
                     subbonnum=0
                     curbpts=0
                 else:
@@ -630,8 +634,14 @@ def qscreen(tuorbon,timeint):
                     tuwd.append(-1)
                     tustatus.append('skipped')
                     tunum+=1
+                    if tuorbon==1:
+                        bonnum+=1
+                        bonstatus.append('skipped')
+                        subbonnum=0
+                        curbpts=0
                     if tunum>=len(tulist):
                         tunum-=1
+                        bonnum-=1
                         qcanvas.itemconfigure(qtext, text = "No more questions left 😔\nPress [Back] to get new questions\nPress [Leave] to exit")
                         reading=False
                         dead=True
@@ -705,12 +715,12 @@ def qscreen(tuorbon,timeint):
     root.bind('<Control-w>',lambda event:leavereader())
     root.focus_force()
     def close_enough(given,normalans):
-        nans=removesqb(normalans.replace(' or ','/').replace('//','/')).lower()
+        nans=unidecode.unidecode(removesqb(normalans.replace(' or ','/').replace('//','/')).lower())
         possans=allposans(nans)
         for i in possans:
             if enchant.utils.levenshtein(given,i)<min(3,len(i)//2):
                 return True
-        if enchant.utils.levenshtein(given,normalans)<min(3,len(normalans)//2):
+        if enchant.utils.levenshtein(given,unidecode.unidecode(normalans))<min(3,len(normalans)//2):
             return True
         return False
     def check_if_buzz_at_eotu():
@@ -733,7 +743,7 @@ def qscreen(tuorbon,timeint):
         ans=is_this_correct.get()
         if ans!="":
             answerline.delete(0,len(ans))
-            if close_enough(ans.lower(),bonalist[bonnum][subbonnum]):
+            if close_enough(ans.lower().strip(),bonalist[bonnum][subbonnum]):
                 curbpts+=5
                 subbonstatus.append(5)
             else:
