@@ -71,30 +71,30 @@ def handback(c,d,tour,tb,tint):
     return
 def gencard():
     s=''
-    if len(tulist)!=0 or len(tulist)!=tustatus.count('skipped'):
-        tstr='STATS\n'
-        tstr+="\nTOSSUPS: %s"%len(tulist)
-        tstr+="\nTOSSUPS SKIPPED: %s"%tustatus.count('skipped')
-        tstr+="\nTOSSUPS HEARD: %s"%(tu)
-        tstr+="\nTOSSUP POINTS: %s"%(tupts)
-        tstr+="\nPOINTS PER TOSSUP HEARD: %s"%(0.0 if tu==0 else round(tupts/tu,2))
-        tstr+="\nCORRECT/INCORRECT: %s/%s"%tuple(ptn)
-        tstr+="\nAVERAGE QUESTION CELERITY: %s"%(sum(elerity)/len(elerity) if len(elerity)>0 else None)
-        tstr+="\nAVERAGE CORRECT CELERITY: %s"%(sum(celerity)/len(celerity) if len(celerity)>0 else None)
-        tstr+="\nAVERAGE INCORRECT CELERITY: %s"%(sum(ielerity)/len(ielerity) if len(ielerity)>0 else None)
-        tstr+="\n"
+    if len(tulist)!=0 and len(tulist)!=tustatus.count('skipped'):
+        s='STATS\n'
+        s+="\nTOSSUPS: %s"%len(tulist)
+        s+="\nTOSSUPS SKIPPED: %s"%tustatus.count('skipped')
+        s+="\nTOSSUPS HEARD: %s"%(tu)
+        s+="\nTOSSUP POINTS: %s"%(tupts)
+        s+="\nPOINTS PER TOSSUP HEARD: %s"%(0.0 if tu==0 else round(tupts/tu,2))
+        s+="\nCORRECT/INCORRECT: %s/%s"%tuple(ptn)
+        s+="\nAVERAGE QUESTION CELERITY: %s"%(sum(elerity)/len(elerity) if len(elerity)>0 else None)
+        s+="\nAVERAGE CORRECT CELERITY: %s"%(sum(celerity)/len(celerity) if len(celerity)>0 else None)
+        s+="\nAVERAGE INCORRECT CELERITY: %s"%(sum(ielerity)/len(ielerity) if len(ielerity)>0 else None)
+        s+="\n"
         if len(bonlist)!=0:
-            tstr+="\nBONUSES: %s"%len(bonlist)
-            tstr+="\nBONUSES SKIPPED: %s"%bonstatus.count('skipped')
-            tstr+="\nBONUSES HEARD: %s"%(bon)
-            tstr+="\nBONUS POINTS: %s"%(bpts)
-            tstr+="\nPOINTS PER BONUS HEARD: %s"%(0.0 if bon==0 else round(bpts/bon,2))
-            tstr+="\n10s/5s/0s: %s/%s/%s\n"%tuple(bagels)
+            s+="\nBONUSES: %s"%len(bonlist)
+            s+="\nBONUSES SKIPPED: %s"%bonstatus.count('skipped')
+            s+="\nBONUSES HEARD: %s"%(bon)
+            s+="\nBONUS POINTS: %s"%(bpts)
+            s+="\nPOINTS PER BONUS HEARD: %s"%(0.0 if bon==0 else round(bpts/bon,2))
+            s+="\n10s/5s/0s: %s/%s/%s\n"%tuple(bagels)
         ccc=0
         iii=0
         for i in range(len(tulist)):
             bz=False
-            tstr+="\nTOSSUP #%s"%(i+1)
+            s+="\nTOSSUP #%s"%(i+1)
             if tustatus[i]!='skipped':
                 wlist=tulist[i].split()
                 if tuwd[i]!=-1:
@@ -104,28 +104,26 @@ def gencard():
                         ccc+=1
                     else:
                         iii+=1
-                tstr+="\nTOURNAMENT: %s"%tutourlist[i][0]
-                tstr+="\nDIFFICULTY: %s (%s)"%(tutourlist[i][1],diffdict[tutourlist[i][1]])
-                tstr+="\nQUESTION: %s"%' '.join(wlist)
-                tstr+="\nANSWER: %s"%tualist[i]
-                tstr+="\nSCORE: %s"%(tustatus[i])
+                s+="\nTOURNAMENT: %s"%tutourlist[i][0]
+                s+="\nDIFFICULTY: %s (%s)"%(tutourlist[i][1],diffdict[tutourlist[i][1]])
+                s+="\nQUESTION: %s"%' '.join(wlist)
+                s+="\nANSWER: %s"%tualist[i]
+                s+="\nSCORE: %s"%(tustatus[i])
                 if bz:
-                    tstr+="\nCELERITY: %s"%elerity[ccc+iii-1]
+                    s+="\nCELERITY: %s"%elerity[ccc+iii-1]
                 if tuid[i] in bonid:
-                    tstr+='\nBONUS:'
+                    s+='\nBONUS:'
                     ind=bonid.index(tuid[i])
                     if bonstatus[ind]!='skipped':
                         for j in range(len(bonlist[ind])):
-                            tstr+="\n\tQUESTION: %s"%bonlist[ind][j]
-                            tstr+="\n\tANSWER: %s"%bonalist[ind][j]
-                            tstr+="\n\tSCORE: %s"%bonstatus[ind][j]
+                            s+="\n\tQUESTION: %s"%bonlist[ind][j]
+                            s+="\n\tANSWER: %s"%bonalist[ind][j]
+                            s+="\n\tSCORE: %s"%bonstatus[ind][j]
                     else:
-                        tstr+='\n\t[skipped]'
+                        s+='\n\t[skipped]'
             else:
-                tstr+='\n[skipped]'
-            tstr+="\n"
-        s+=tstr
-    if len(tulist)!=0 or len(bonlist)!=0:
+                s+='\n[skipped]'
+            s+="\n"
         t=datetime.datetime.now()
         d=str(t.year)
         for i in (t.month, t.day, t.hour, t.minute, t.second):
@@ -133,7 +131,7 @@ def gencard():
                 d+="0"
             d+=str(i)
         with open("stats-%s.txt"%d,'w',encoding='utf-8') as f:
-            f.write(s)
+            f.write(s.strip())
 def leavehomescreen():
     global cc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tualist,bonalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum
     if messagebox.askyesno("Leave?", "Do you want to quit this reader? (Press y/n)"):
@@ -211,7 +209,7 @@ def setup():
     catl.grid(row=0,column=0, sticky="e")
     catt.grid(row=0,column=1,padx=(0,5))
     lcats.grid(row=0,column=2, sticky="w")
-    CreateToolTip(lcats, text = 'Pick whatever categories you want via the dropdown menu. Leave blank for all. \nList of categories: \n★ History/Life\n★ Language\n★ Literature\n★ Mythology\n\nEx. \n"Literature" → only gives questions from literature\n"History/Life, Mythology" → gives questions from history/life and mythology\n"Geography", "1" in difficulties → any questions on language of novice difficulty')
+    CreateToolTip(lcats, text = 'Pick whatever categories you want via the dropdown menu. Leave blank for all. \nList of categories: \n★ History/Life\n★ Language\n★ Literature\n★ Mythology\n\nEx. \n"Literature" → only gives questions from literature\n"History/Life, Mythology" → gives questions from history/life and mythology\n"Language", "1" in difficulties → any questions on language of novice difficulty')
     diffl.grid(row=1,column=0, sticky="e")
     difft.grid(row=1,column=1,padx=(0,5))
     ldiffs.grid(row=1,column=2, sticky="w")
@@ -310,6 +308,7 @@ def backtohomescreen():
     if tbrn==1:
         bonnum+=1
     subbonnum=-1
+    curbpts=0
     setup()
     if (cc,dd,ttoouurr,ttbb,tthhyymmee)!=(None,None,None,None,None):
         tbrn=0
@@ -430,6 +429,7 @@ def qscreen(tuorbon,timeint):
                     if tuorbon==1:
                         bonnum+=1
                         subbonnum=-1
+                        curbpts=0
                     tu+=1
                     tuwd.append(curwd)
                     qcanvas.itemconfigure(qtext,text=' '.join(curq[:curwd])+' 🔔 '+' '.join(curq[curwd:])+'\n\n'+tualist[tunum])
@@ -477,6 +477,7 @@ def qscreen(tuorbon,timeint):
                     subbonstatus=[]
                     bon+=1
                     bpts+=curbpts
+                    print(curbpts)
                     bagels[(10-curbpts)//5]+=1
                     bonct['text']='Bonuses: %s'%(bon)
                     bonuspts['text']='Bonus Points: %s'%(bpts)
@@ -728,6 +729,7 @@ def qscreen(tuorbon,timeint):
                 tbrn=0
                 bonnum+=1
                 subbonnum=-1
+                curbpts=0
                 bonstatus.append('skipped')
             tuwd.append(-1)
             dead=True
@@ -767,6 +769,7 @@ def qscreen(tuorbon,timeint):
                 bonstatus.append(subbonstatus)
                 subbonstatus=[]
                 bon+=1
+                print(curbpts)
                 bagels[(10-curbpts)//5]+=1
                 bpts+=curbpts
                 bonct['text']='Bonuses: %s'%(bon)

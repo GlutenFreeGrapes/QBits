@@ -73,7 +73,7 @@ def handback(c,sc,d,tour,tb,tint):
     return
 def gencard():
     s=''
-    if len(tulist)!=0 or len(tulist)!=tustatus.count('skipped'):
+    if len(tulist)!=0 and len(tulist)!=tustatus.count('skipped'):
         tstr='TOSSUPS\n'
         tstr+="\nTOSSUPS: %s"%len(tulist)
         tstr+="\nTOSSUPS SKIPPED: %s"%tustatus.count('skipped')
@@ -134,7 +134,7 @@ def gencard():
         s+=tstr
     if len(tulist)!=0 and len(bonlist)!=0:
         s+="\n\n"
-    if len(bonlist)!=0 or len(bonlist)!=bonstatus.count('skipped'):
+    if len(bonlist)!=0 and len(bonlist)!=bonstatus.count('skipped'):
         bstr='BONUSES\n'
         bstr+="\nBONUSES: %s"%len(bonlist)
         bstr+="\nBONUSES SKIPPED: %s"%bonstatus.count('skipped')
@@ -448,7 +448,7 @@ def qscreen(tuorbon,timeint):
                 fans=tufalist[tunum]
                 actualans=tualist[tunum]
                 if buzzed:
-                    if close_enough(givenans.lower(),fans,actualans.lower()):
+                    if close_enough(givenans.lower().strip(),fans,actualans.lower().strip()):
                         if curwd<=pm:
                             tupts+=15
                             ptn[0]+=1
@@ -519,7 +519,7 @@ def qscreen(tuorbon,timeint):
                 root.unbind("<Return>")
                 fans=bonfalist[bonnum][subbonnum]
                 actualans=bonalist[bonnum][subbonnum]
-                if close_enough(givenans.lower(),fans,actualans.lower()):
+                if close_enough(givenans.lower().strip(),fans,actualans.lower().strip()):
                     curbpts+=10
                     subbonstatus.append(10)
                 else:
@@ -839,10 +839,10 @@ def close_enough(given,htmlans,normalans):
     s=bs4.BeautifulSoup(htmlans, features="html.parser")
     strongs=s.find_all("strong")
     for i in strongs:
-        accepans.add(i.string.lower())
+        accepans.add(i.string.lower().strip())
     bs=s.find_all("b")
     for i in bs:
-        accepans.add(i.string.lower())
+        accepans.add(i.string.lower().strip())
     for i in accepans:
         if enchant.utils.levenshtein(given,i)<min(3,len(i)//2):
             return True
@@ -866,10 +866,10 @@ def check_if_buzz_at_eotu():
         root.update()
 def check_if_buzz_at_eobon():
     global dead,bon,bonct,bonuspts,ppb,tttb,curbpts,answerline,reading,tbrn,bagels,bpts,subbonstatus,bonstatus
-    ans=is_this_correct.get()
+    ans=is_this_correct.get().strip()
     if ans!="":
-        answerline.delete(0,len(ans))
-        if close_enough(ans.lower(),bonfalist[bonnum][subbonnum],bonalist[bonnum][subbonnum].lower()):
+        answerline.delete(0,len(is_this_correct.get()))
+        if close_enough(ans.lower().strip(),bonfalist[bonnum][subbonnum],bonalist[bonnum][subbonnum].lower().strip()):
             curbpts+=10
             subbonstatus.append(10)
         else:
