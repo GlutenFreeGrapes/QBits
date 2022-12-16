@@ -5,7 +5,7 @@ ddddd=list(range(1,4))
 diffdict={1:"Novice - Latin I",2:"Intermediate - Latin II",3:"Advanced - Latin III+"}
 tttttooooouuuuurrrrr,tourids=dict(),dict()
 cc,dd,ttoouurr,ttbb,tthhyymmee,tuct,tossuppts,ppg,ptnct,bonct,bonuspts,ppb,tttb,root,buzzer,enterans,answerline,qcanvas,qtext,is_this_correct,timeoutctr,endctr,qctr,qframe,data,curq,read=None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
-buzzed,reading,dead,ansalrgiven,qskipped,qfromreader=False,False,True,False,False,False
+buzzed,reading,dead,ansalrgiven,qskipped,qfromreader,savestats=False,False,True,False,False,False,True
 ptn,bagels=[0,0],[0,0,0]
 tu,bon,tupts,bpts,tunum,bonnum,subbonnum,curwd,curbpts,tbrn,qlen=0,0,0,0,-1,-1,-1,0,0,0,0
 tulist,tualist,tustatus,tuwd,tuid,bonid,bonlist,bonalist,bonstatus,subbonstatus,tutourlist,bontourlist,elerity,celerity,ielerity=[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]
@@ -65,9 +65,9 @@ def settourlist():
         for j in sorted(dddddddddd.keys(),reverse=True):
             llllllllll.extend(sorted(dddddddddd[j]))
         tttttooooouuuuurrrrr[i]=llllllllll
-def handback(c,d,tour,tb,tint):
-    global cc,dd,ttoouurr,ttbb,tthhyymmee
-    cc,dd,ttoouurr,ttbb,tthhyymmee=c,d,tour,tb,tint
+def handback(c,d,tour,tb,tint,sa):
+    global cc,dd,ttoouurr,ttbb,tthhyymmee,savestats
+    cc,dd,ttoouurr,ttbb,tthhyymmee,savestats=c,d,tour,tb,tint,sa
     return
 def gencard():
     s=''
@@ -135,7 +135,8 @@ def gencard():
 def leavehomescreen():
     global cc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tualist,bonalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum
     if messagebox.askyesno("Leave?", "Do you want to quit this reader? (Press y/n)"):
-        gencard()
+        if savestats:
+            gencard()
         sys.exit()
 def leavereader():
     global cc,dd,ttoouurr,ttbb,tthhyymmee,tbrn,root,tulist,bonlist,tualist,bonalist,qframe,buzzed,reading,dead,ansalrgiven,qskipped,subbonnum,curwd,curbpts,tustatus,bonstatus,subbonstatus,tunum,bonnum,tuwd,tutourlist,bontourlist,tuid,bonid
@@ -155,10 +156,11 @@ def leavereader():
             else:
                 bonstatus.append('skipped')
                 subbonstatus=[]
-        gencard()
+        if savestats:
+            gencard()
         sys.exit()
 def setup():
-    global qfromreader
+    global qfromreader,savestats
     qfromreader=False
     root=tk.Tk()
     root.geometry("+20+20")
@@ -253,10 +255,11 @@ def setup():
             d=ddddd
         tb=tubon.get()
         tint=thyme.get()
-        handback(c,d,t,tb,tint)
+        sa=sav.get()
+        handback(c,d,t,tb,tint,sa)
         root.destroy()
     fram4=tk.Frame(root)
-    fram4.grid(row=3,column=0)
+    fram4.grid(row=4,column=0)
     abt=tk.Button(fram4,text = 'About')
     CreateToolTip(abt, text = "Hello, I'm GlutenFreeGrapes. I created this program in April 2022 \nas an all-in-one self-study certamen tool. \n\n★★★★★Why this?★★★★★\nI made this because despite the fact that there are numerous packets\nonline, there are no question databases to store them and no\nreaders to read from them. So, I decided to try and make one myself. \n\n★★★★★Credits★★★★★\nThis was inspired by my quizbowl question reader, QBits. \n\n★★★★★Contact★★★★★\nMy Github is @GlutenFreeGrapes. ")
     contr=tk.Button(fram4,text = 'Controls')
@@ -271,6 +274,14 @@ def setup():
     tunbon.grid(row=0,column=2, sticky="w")
     tubonex.grid(row=0,column=3, sticky="w")
     CreateToolTip(tubonex, text = 'Either practice on tossups only or do a normal packet reading')
+    fram5=tk.Frame(root)
+    sav=tk.BooleanVar(value=savestats)
+    save=tk.Checkbutton(fram5,variable=sav,text='Save my stats to a text file')
+    save.grid(row=0,column=0)
+    fram5.grid(row=3,column=0)
+    saveex=tk.Button(fram5, text='❔')
+    saveex.grid(row=0,column=1)
+    CreateToolTip(saveex,text="""Saves your stats (e.g., points per tossup, questions and where you buzzed in, etc)into a text file. """)
     abt.grid(row=0,column=0,padx=(0,10),pady=(0,5))
     contr.grid(row=0,column=1,padx=(10,10),pady=(0,5))
     sumbit.grid(row=0,column=2,padx=(10,10),pady=(0,5))
